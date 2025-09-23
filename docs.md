@@ -13,8 +13,7 @@ This documentation covers the complete communication protocol and system archite
 ### Main Components
 
 1. **Arduino Firmware**: 
-   - `mx28_bulk.ino` - Primary real-time control firmware
-   - `mx28_bulk_teaching.ino` - Teaching mode with impedance control
+   - `mx28_bulk_teaching.ino`
    
 2. **Python Control Systems**:
    - `openRB.py` - ROS2 integration and ML inference
@@ -722,3 +721,4 @@ ros2 topic echo /imu
 
 
 This documentation provides a complete reference for understanding and working with the OpenRB-150 trajectory control system's communication protocol and ROS2 integration.
+
