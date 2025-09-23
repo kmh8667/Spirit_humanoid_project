@@ -394,52 +394,6 @@ if received_crc != calculated_crc:
 - ❌ MCU diagnostics only via serial debug (if connected)
 - ❌ No automatic recovery mechanisms
 
-### Diagnostic Functions
-
-#### **SBC Diagnostics**:
-```python
-# Get current error statistics
-stats = get_crc_statistics()
-print(f"Error rate: {stats['error_rate_percent']:.3f}%")
-
-# Print formatted statistics
-print_crc_statistics()
-# Output: CRC STATS: Total=1000, Errors=5, Error Rate=0.500%, Success Rate=99.500%
-
-# Reset counters for new measurement period
-reset_crc_statistics()
-```
-
-#### **MCU Diagnostics**:
-```cpp
-// Global counters available for debugging
-extern uint32_t crc_error_count;
-extern uint32_t total_packets_received;
-
-// Calculate error rate
-float error_rate = (float)crc_error_count / total_packets_received * 100.0;
-```
-
-### Recommended Improvements
-
-#### **For Production Systems**:
-1. **ACK/NACK Protocol**: Add acknowledgment for critical commands
-2. **Packet Sequence Numbers**: Detect lost/duplicate packets  
-3. **Retransmission**: Automatic retry for failed critical commands
-4. **CRC Error ROS2 Topic**: Real-time error reporting to higher layers
-5. **Adaptive Error Recovery**: Reduce transmission rate on high error conditions
-
-#### **Example Enhanced Error Handling**:
-```cpp
-// Enhanced MCU packet processing with retry logic
-if (received_crc != calculated_crc) {
-    send_nack_packet(packet_id, NACK_CRC_ERROR);
-    crc_error_count++;
-    return;
-}
-send_ack_packet(packet_id); // Acknowledge successful reception
-```
-
 ### Performance Impact
 
 - **Overhead**: +2 bytes per packet (1.4% for encoder packets)
@@ -765,5 +719,6 @@ ros2 topic echo /joint_states
 # View IMU data
 ros2 topic echo /imu
 ```
+
 
 This documentation provides a complete reference for understanding and working with the OpenRB-150 trajectory control system's communication protocol and ROS2 integration.
