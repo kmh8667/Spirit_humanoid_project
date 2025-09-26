@@ -16,7 +16,8 @@ This documentation covers the complete communication protocol and system archite
    - `mx28_bulk_teaching.ino`
    
 2. **Python Control Systems**:
-   - `openRB_traj.py` - ROS2 integration and ML inference with trajectory planning and execution
+   - `openRB_traj.py` - ROS2 integration and ML inference with behavior execution
+   - `trajectory_controller.py` - Advanced trajectory creation, collection, and execution controller
    
 3. **Packet Handling**:
    - `openrb/packet_handler.py` - Centralized CRC16 and protocol utilities
@@ -403,15 +404,18 @@ if received_crc != calculated_crc:
 
 ### Trajectory Controller (`trajectory_controller.py`)
 
-The trajectory controller provides advanced trajectory planning and execution capabilities with precise timing control.
+The trajectory controller provides comprehensive trajectory creation, collection, and execution capabilities with precise timing control and smart transition handling.
 
 #### Key Features
+- **Trajectory Collection**: Interactive creation of trajectories with automatic timestamping
 - **Interpolation Methods**: Linear and cubic spline interpolation between waypoints
 - **Execution Rate**: 50Hz trajectory execution with sub-millisecond timing precision
-- **CRC16 Validation**: Error detection on all encoder data packets
-- **Interactive Interface**: Command-line interface for trajectory management
-- **Transition Smoothing**: Automatic smooth transitions from current pose to trajectory start
+- **Smart Transitions**: Automatic transition detection and timing from current pose
+- **CRC16 Validation**: Error detection on all encoder data packets with statistics tracking
+- **Interactive Interface**: Command-line interface for comprehensive trajectory management
+- **Teaching Mode Integration**: Direct support for compliant teaching mode control
 - **Joint Limiting**: Software enforcement of joint position limits during execution
+- **Trajectory Visualization**: Matplotlib plotting with actual vs target position comparison
 
 #### Trajectory File Format
 ```
@@ -423,18 +427,41 @@ j_pelvis_l j_pelvis_r j_shoulder_l ... j_gripper_l time_from_start
 ```
 
 #### Interactive Commands
-- `save [time]` - Save current joint positions as trajectory waypoint
-- `load <filename> [time]` - Load and execute trajectory with optional transition time
-- `load_w_interp <filename> <method> [time]` - Load with specific interpolation method
-- `plot` - Generate visualization of loaded trajectory (requires matplotlib)
+
+**Trajectory Collection**:
+- `create <filename>` - Start new trajectory collection with automatic timestamping
+- `add` - Add current joint positions as waypoint (`time_from_start` should be modified manually)
+- `save` - Save and close trajectory collection
+- `cancel` - Cancel trajectory collection without saving
+
+**Trajectory Execution**:
+- `load <filename>` - Load and execute trajectory with smart transition detection
+- `load_w_interp <filename> <method>` - Load with specific interpolation method (linear/cubic)
+- `stop` - Stop current trajectory execution
+- `plot` - Generate 3x6 subplot visualization comparing target vs actual positions for latest trajectory execution
+
+**System Control**:
 - `teaching` - Toggle compliant teaching mode for direct manipulation
-- `crc` - Display CRC error statistics
+- `toggle` - Toggle motor torque enable/disable
+- `enable/disable` - Explicit torque control commands
+- `crc` - Display CRC error statistics with success/error rates
 - `reset_crc` - Reset CRC error counters
+- `sample` - Create sample trajectory file for demonstration
+
+#### Smart Transition Logic
+The trajectory controller includes intelligent transition handling:
+- **Automatic Detection**: Compares current pose to first trajectory waypoint
+- **RMS Error Calculation**: Uses position error across 18 motor joints
+- **Smart Skip**: If position error < 0.1 rad, skips to second waypoint
+- **Transition Timing**: Uses first waypoint's timestamp as transition duration
+- **Smooth Execution**: Ensures continuous motion from current pose to trajectory
 
 #### CRC Error Monitoring
 ```python
-# Error statistics available in real-time
+# Real-time error statistics with detailed tracking
 stats = get_crc_statistics()
+print(f"Total packets: {stats['total_packets_received']}")
+print(f"CRC errors: {stats['crc_errors']}")
 print(f"Error rate: {stats['error_rate_percent']:.3f}%")
 print(f"Success rate: {stats['success_rate_percent']:.3f}%")
 ```
