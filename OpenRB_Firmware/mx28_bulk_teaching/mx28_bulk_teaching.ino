@@ -64,7 +64,9 @@ uint16_t calculateCRC16(const uint8_t* data, size_t length) {
 // motor ID 1, 3 direction should be inverted
 // Offset should be added for target positions, substracted for encoder readings
 // motor 3: +0.78 | motor 4: -0.78 | motor 5: -1.57 | motor 6: +1.57 
-float zero_positions[18] = {0.0};
+float offset[] = {0.0,0.0,0.78,-0.78,-1.57,1.57,0.0,0.0,0.0,0.0,-0.0,0.0,0.0,-0.0,0.0,-0.0,0.0,0.0,0.0,0.0};
+
+float zero_positions[20] = {0.0};
 
 // Operating mode control
 enum RobotOperatingMode {
@@ -74,7 +76,6 @@ enum RobotOperatingMode {
 RobotOperatingMode current_mode = NORMAL_MODE;
 
 // Teaching mode parameters
-const float MOVE_THRESHOLD = 0.2;
 float kp_impedance = 15.0;
 float kd_impedance = 2.0;
 float prev_positions[18] = {0};
@@ -82,7 +83,7 @@ float prev_velocities[18] = {0};
 unsigned long lastTeachingTime = 0;
 const unsigned long TEACHING_INTERVAL = 20000; // 50Hz for teaching mode
 
-// Timing constants for normal mode (50Hz)
+// Timing constants for normal mode (50Hz data transmission)
 const unsigned long ENCODER_INTERVAL = 20000; // 20ms = 50Hz
 const unsigned long IMU_INTERVAL = 20000;      // 20ms = 50Hz
 const unsigned long IMU_OFFSET = 0;        // No offset to stagger with encoder
@@ -95,20 +96,20 @@ unsigned long lastIMUTime = IMU_OFFSET; // Start with offset to stagger timing
 const float ACCEL_TO_MS2 = 9.80665f;        // g to m/s²
 const float GYRO_DEG_TO_RAD = 3.141592653589793f / 180.0f;  // deg/s to rad/s
 const float POS_SCALE = 0.088f / 180.0f * 3.141592653589793f;  // Position conversion: 0.088 * PI/180
-const float VEL_SCALE = 0.229f * 2.0f * 3.141592653589793f / 60.0f;  // Velocity conversion
-const double RAD_TO_MOTOR_UNITS = 180.0 / 3.141592653589793 / 0.088;  // radians -> motor units conversion
+const float VEL_SCALE = 0.11f * 2.0f * 3.141592653589793f / 60.0f;  // Velocity conversion
+const double RAD_TO_MOTOR_UNITS = 180.0 / 3.141592653589793 / 0.088;  // radians -> motor units conversion (high precision)
 
 // Serial command processing buffer
 uint8_t serialBuffer[512];
 size_t bufferIndex = 0;
 
-// Protocol 2.0 Control Table Addresses for XL330-M288
-#define ADDR_GOAL_POSITION      116
-#define ADDR_PRESENT_POSITION   132
-#define ADDR_PRESENT_VELOCITY   128
-#define LEN_GOAL_POSITION       4
-#define LEN_PRESENT_POSITION    4
-#define LEN_PRESENT_VELOCITY    4
+// Protocol 1.0 Control Table Addresses for MX-28
+#define ADDR_GOAL_POSITION      30
+#define ADDR_PRESENT_POSITION   36
+#define ADDR_PRESENT_VELOCITY   38
+#define LEN_GOAL_POSITION       2
+#define LEN_PRESENT_POSITION    2
+#define LEN_PRESENT_VELOCITY    2
 
 // Instructions
 ParamForBulkReadInst_t bulk_read_positions_param;
@@ -257,8 +258,17 @@ void processTargetPositionPacket(uint8_t* destuffed_data, size_t data_size) {
     
     float target_pos = target_positions[i];
     
+    // Apply direction inversion and offset compensation (reverse of encoder processing)
+    float adjusted_pos;
+    if (i == 0 || i == 2) {
+      // Motor 1 and 3: inverted
+      adjusted_pos = -target_pos + offset[i];
+    } else {
+      adjusted_pos = target_pos + offset[i];
+    }
+    
     // Convert from radians to motor units with proper rounding
-    int32_t motor_position = (int32_t)((target_pos * RAD_TO_MOTOR_UNITS) + 2048.5);
+    int32_t motor_position = (int32_t)((adjusted_pos * RAD_TO_MOTOR_UNITS) + 2048.5);
     
     // Set target position for motor
     sync_write_param.xel[i].id = motorID;
@@ -423,20 +433,27 @@ void runTeachingMode(unsigned long currentTime) {
   for (int i = 0; i < 18; i++) {
     float current_pos = getCurrentPosition(i+1);
     float current_vel = getCurrentVelocity(i+1);
-    if (abs(current_vel) < MOVE_THRESHOLD)
+    
+    // Skip if velocity is too low (robot is stationary)
+    if (abs(current_vel) < 0.2) {
+      prev_positions[i] = current_pos;
+      prev_velocities[i] = current_vel;
       continue;
-
+    }
+    
     // Calculate force based on position and velocity differences
     float pos_error = current_pos - prev_positions[i];
     float vel_error = current_vel - prev_velocities[i];
     
-    // Calculate next position
+    // Impedance control: reduce resistance to external forces
     float impedance_torque = -kp_impedance * pos_error - kd_impedance * vel_error;
     
+    // Apply compliant control (reduced stiffness)
     float target_pos = current_pos + (impedance_torque * 0.001); // Small adjustment
     
-    // Set goal position
-    dxl.setGoalPosition(i+1, target_pos * RAD_TO_MOTOR_UNITS + 2048);
+    // Set goal position with impedance control
+    dxl.setGoalPosition(i+1, 
+                       (target_pos * 180.0 / 3.141592 / 0.088) + 2048);
     
     prev_positions[i] = current_pos;
     prev_velocities[i] = current_vel;
@@ -448,7 +465,16 @@ float getCurrentPosition(int motor_id) {
 }
 
 float getCurrentVelocity(int motor_id) {
-  return dxl.getPresentVelocity(motor_id) * VEL_SCALE;
+  float raw_vel_val = dxl.getPresentVelocity(motor_id);
+  float raw_vel = 0.0;
+  // Calculate speed
+  if (0<=raw_vel_val && raw_vel_val<=1023){  // CCW
+    raw_vel = raw_vel_val * VEL_SCALE;        
+  }
+  else if (1024<=raw_vel_val && raw_vel_val<=2047){  // CW
+    raw_vel = -(raw_vel_val-1024) * VEL_SCALE;
+  } 
+  return raw_vel;
 }
 
 void initBulkReadCommand(){
@@ -478,10 +504,9 @@ void initSyncWriteCommand(){
 void setup() {
   
   // Start serial and wait for it
-  // TODO: Seperate debug serial and data transfer serial (Serial, Serial2)
   Serial.begin(921600);
   while (!Serial) ;
-  dxl.setPortProtocolVersionUsingIndex(2);
+  dxl.setPortProtocolVersionUsingIndex(1);
   dxl.begin(1000000);
   delay(2000);
 
@@ -536,6 +561,7 @@ void loop() {
   }
   
   if (current_mode == TEACHING_MODE) {
+    // Teaching mode: run impedance control
     runTeachingMode(currentTime);
   } else {
     // Normal mode: run trajectory control with IMU and encoder data transmission
@@ -560,10 +586,26 @@ void loop() {
         memcpy(&raw_pos_val, positions_read_result.xel[i].data, positions_read_result.xel[i].length);
         memcpy(&raw_vel_val, velocities_read_result.xel[i].data, velocities_read_result.xel[i].length);
         
+        // Calculate positions using same logic as mx28.ino for precision
         float raw_pos = (raw_pos_val - 2048) * POS_SCALE;
-        float raw_vel = (raw_vel_val) * VEL_SCALE;
-        encoderData.positions[i] = raw_pos;
-        encoderData.velocities[i] = raw_vel;
+        float raw_vel = 0.0;
+        // Calculate speed
+        if (0<=raw_vel_val && raw_vel_val<=1023){  // CCW
+          raw_vel = raw_vel_val * VEL_SCALE;        
+        }
+        else if (1024<=raw_vel_val && raw_vel_val<=2047){  // CW
+          raw_vel = -(raw_vel_val-1024) * VEL_SCALE;
+        } 
+
+        // Apply direction inversion and offset compensation
+        if (i == 0 || i == 2) {
+          // Motor 1 and 3: inverted
+          encoderData.positions[i] = -(raw_pos - offset[i]);
+          encoderData.velocities[i] = -raw_vel;
+        } else {
+          encoderData.positions[i] = raw_pos - offset[i];
+          encoderData.velocities[i] = raw_vel;
+        }
       }
       
       sendWithByteStuffing((uint8_t*)&encoderData, sizeof(encoderData));

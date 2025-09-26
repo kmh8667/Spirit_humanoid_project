@@ -1,0 +1,6 @@
+# Joint positions saved at 2025-08-25 20:14:41
+# Format: 22 joint positions (in sim_joint_names order) followed by time_from_start
+# j_pelvis_l j_pelvis_r j_shoulder_l j_shoulder_r j_thigh1_l j_thigh1_r j_high_arm_l j_high_arm_r j_thigh2_l j_thigh2_r j_low_arm_l j_low_arm_r j_tibia_l j_tibia_r j_ankle1_l j_ankle1_r j_ankle2_l j_ankle2_r j_pan j_tilt j_gripper_r j_gripper_l time_from_start
+0.061436 0.001536 0.058364 -0.188914 0.012287 0.059900 1.472686 1.468078 1.133486 -1.210281 -0.994042 0.533275 -2.282332 2.280796 -1.158061 1.075123 0.004608 0.076794 0.000000 0.000000 0.000000 0.000000 0.000
+0.00 -0.0 -2.022766 -1.852283 -0.0 -0.0 0.978130 1.005776 -0.0 0.0 -0.846596 0.851204 -0.0 -0.0 0.0 0.0 0.0 0.0 0.000000 0.000000 0.000000 0.000000 1.000
+0.061436 0.001536 0.058364 -0.188914 0.012287 0.059900 1.472686 1.468078 1.133486 -1.210281 -0.994042 0.533275 -2.282332 2.280796 -1.158061 1.075123 0.004608 0.076794 0.000000 0.000000 0.000000 0.000000 2.000

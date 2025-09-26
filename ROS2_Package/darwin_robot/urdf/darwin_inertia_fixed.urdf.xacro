@@ -1,0 +1,1835 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="darwinOP">
+  <xacro:arg name="simulation_controllers" default="$(find darwin_robot)/params/controller.yaml" />
+  <xacro:arg name="is_classic_gz" default="false" />
+  <link name="base_link" />
+
+  <joint name="base_link_to_body" type="fixed">
+    <parent link="base_link" />
+    <child link="MP_BODY" />
+  </joint>
+
+
+  <link name="MP_BODY">
+    <inertial>
+      <origin xyz="-0.02903261 0.00038330 -0.01572951"/>
+      <mass value="0.97559947"/>
+      <inertia ixx="0.00204461" ixy="-0.00000001" ixz="0.00021212" iyy="0.00176368" iyz="0.00000000" izz="0.00196165"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://darwin_robot/meshes/body.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.02 0 -0.025" rpy="0 0 0" />
+      <geometry>
+        <box size="0.102 0.100 0.08" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="MP_NECK">
+    <inertial>
+      <origin xyz="0.00087372 0.00116556 0.01606493"/>
+      <mass value="0.02435772"/>
+      <inertia ixx="0.00000322" ixy="-0.00000000" ixz="0.00000000" iyy="0.00000620" iyz="0.00000009" izz="0.00000518"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://darwin_robot/meshes/neck.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="MP_HEAD">
+    <inertial>
+      <origin xyz="-0.01566812 -0.02684731 0.00001299"/>
+      <mass value="0.15804192"/>
+      <inertia ixx="0.00015678" ixy="0.00002489" ixz="-0.00000000" iyy="0.00016819" iyz="0.00000000" izz="0.00017148"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!-- box size="0.0634 0.061 0.033" /-->
+        <mesh filename="package://darwin_robot/meshes/head.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://darwin_robot/meshes/head_coll.stl" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="MP_BACK_L">
+    <!-- <inertial>
+      <origin xyz="0.000064 -0.018565 -0.007667" />
+      <mass value="0.15804192" />
+      <inertia ixx="0.00137" ixy="0.0" ixz="0.0"
+        iyy="0.00140" iyz="0.0"
+        izz="0.00170" />
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.001 0.001 0.001" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual> -->
+  </link>
+
+  <link name="MP_SHOULDER_L">
+    <inertial>
+      <origin xyz="-0.00424135 0.00005337 0.00832600"/>
+      <mass value="0.02591302"/>
+      <inertia ixx="0.00000601" ixy="-0.00000000" ixz="0.00000073" iyy="0.00000371" iyz="0.00000000" izz="0.00000636"/>
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--box
+        size="0.016 0.033 0.02165" /-->
+        <mesh filename="package://darwin_robot/meshes/shoulder_l.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="MP_ARM_HIGH_L">
+    <inertial>
+      <origin xyz="-0.02795155 0.00091304 0.00208647"/>
+      <mass value="0.16837715"/>
+      <inertia ixx="0.00004890" ixy="0.00000021" ixz="-0.00000398" iyy="0.00013726" iyz="0.00000032" izz="0.00012680"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--box
+        size="0.06 0.032 0.035" /-->
+        <mesh filename="package://darwin_robot/meshes/arm_high_l.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link
+    name="MP_ARM_LOW_L">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" />
+      <mass value="0.059288504" />
+      <inertia ixx="0.0086855267" ixy="0.00053020311" ixz="0.000043636051" iyx="0.00053020311"
+        iyy="0.0021192085" iyz="-0.00064855932" izx="0.000043636051" izy="-0.00064855932"
+        izz="0.0086845450" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0.016 0.016 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.032 0.032 0.035" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+
+  <link
+    name="MP_ARM_GRIPPER_FIX_L">
+    <inertial>
+      <origin xyz="0.045838 -0.013490 0.006666" />
+      <mass value="0.010" />
+      <inertia ixx="0.012202839" ixy="-0.0020812626" ixz="-0.00088143449" iyx="-0.00020812626"
+        iyy="0.0038088441" iyz="0.00018251448" izx="-0.00088143449" izy="0.00018251448"
+        izz="0.011340830" />
+    </inertial>
+    <visual>
+      <origin xyz="0.016 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.064 0.032 0.032" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.064 0.032 0.032" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link
+    name="MP_ARM_GRIPPER_FIX_DUMMY_L">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.010" />
+      <inertia ixx="0.012202839" ixy="-0.0020812626" ixz="-0.00088143449" iyx="-0.0020812626"
+        iyy="0.0038088441" iyz="0.00018251448" izx="-0.000088143449" izy="0.00018251448"
+        izz="0.011340830" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.032 0.005 0.032" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link
+    name="MP_ARM_GRIPPER_MOV_L">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" />
+      <mass value="0.010" />
+      <inertia ixx="0.012202839" ixy="-0.00020812626" ixz="-0.000088143449" iyx="-0.00020812626"
+        iyy="0.0038088441" iyz="0.00018251448" izx="-0.000088143449" izy="0.00018251448"
+        izz="0.011340830" />
+    </inertial>
+    <visual name="VIS_MP_ARM_GRIPPER_MOV_L">
+      <origin xyz="0.016 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.032 0.005 0.032" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+    <visual name="VIS_MP_ARM_GRIPPER_MOV_EXT_L">
+      <origin xyz="0.031 -0.0025 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.002 0.01 0.032" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="MP_BACK_R">
+    <!-- <inertial>
+      <origin xyz="0.000064 -0.018565 -0.007667" />
+      <mass value="0.15804192" />
+      <inertia ixx="0.00137" ixy="0.0" ixz="0.0"
+        iyy="0.00140" iyz="0.0"
+        izz="0.00170" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.001 0.001 0.001" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual> -->
+  </link>
+
+  <link name="MP_SHOULDER_R">
+    <inertial>
+      <origin xyz="-0.00424135 0.00005337 0.00832600"/>
+      <mass value="0.02591302"/>
+      <inertia ixx="0.00000601" ixy="-0.00000000" ixz="0.00000073" iyy="0.00000371" iyz="0.00000000" izz="0.00000636"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 3.14" />
+      <geometry>
+        <!--box
+        size="0.016 0.033 0.02165" /-->
+        <mesh filename="package://darwin_robot/meshes/shoulder_r.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="MP_ARM_HIGH_R">
+    <inertial>
+      <origin xyz="-0.02796307 -0.00089113 0.00209107"/>
+      <mass value="0.16837715"/>
+      <inertia ixx="0.00004890" ixy="-0.00000021" ixz="-0.00000398" iyy="0.00013726" iyz="-0.00000032" izz="0.00012680"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="3.14 0 0" />
+      <geometry>
+        <!--box
+        size="0.06 0.032 0.035"/-->
+        <mesh filename="package://darwin_robot/meshes/arm_high_r.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="MP_ARM_LOW_R">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" />
+      <mass value="0.059288504" />
+      <inertia ixx="0.086855267" ixy="0.0053020311" ixz="0.00043636051" iyx="0.0053020311"
+        iyy="0.021192085" iyz="-0.0064855932" izx="0.00043636051" izy="-0.0064855932"
+        izz="0.086845450" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0.016 -0.016 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.032 0.032 0.035" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="MP_ARM_GRIPPER_FIX_R">
+    <inertial>
+      <origin xyz="0.045838 -0.013490 0.006666" />
+      <mass value="0.010" />
+      <inertia ixx="0.012202839" ixy="-0.00020812626" ixz="-0.000088143449" iyx="-0.00020812626"
+        iyy="0.0038088441" iyz="0.00018251448" izx="-0.000088143449" izy="0.00018251448"
+        izz="0.011340830" />
+    </inertial>
+    <visual>
+      <origin xyz="0.016 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.064 0.032 0.032" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.064 0.032 0.032" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="MP_ARM_GRIPPER_FIX_DUMMY_R">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="0.010" />
+      <inertia ixx="0.012202839" ixy="-0.00020812626" ixz="-0.000088143449" iyx="-0.00020812626"
+        iyy="0.0038088441" iyz="0.00018251448" izx="-0.000088143449" izy="0.00018251448"
+        izz="0.011340830" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.032 0.005 0.032" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="MP_ARM_GRIPPER_MOV_R">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" />
+      <mass value="0.010" />
+      <inertia ixx="0.012202839" ixy="-0.00020812626" ixz="-0.000088143449" iyx="-0.00020812626"
+        iyy="0.0038088441" iyz="0.00018251448" izx="-0.000088143449" izy="0.00018251448"
+        izz="0.011340830" />
+    </inertial>
+    <visual name="VIS_MP_ARM_GRIPPER_MOV_R">
+      <origin xyz="0.016 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.032 0.005 0.032" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+    <visual name="VIS_MP_ARM_GRIPPER_MOV_EXT_R">
+      <origin xyz="0.031 -0.0025 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.002 0.01 0.032" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="MP_PELVIS_L">
+    <inertial>
+      <origin xyz="0.00013902 0.00057833 0.00987102"/>
+      <mass value="0.16700000"/>
+      <inertia ixx="0.00005092" ixy="0.00000000" ixz="0.00000000" iyy="0.00002428" iyz="0.00000000" izz="0.00004359"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--box
+        size="0.045 0.08175 0.028652" /-->
+        <mesh filename="package://darwin_robot/meshes/pelvis_l.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="MP_THIGH1_L">
+    <inertial>
+      <origin xyz="0.00293783 0.01181841 0.01641714"/>
+      <mass value="0.11904336"/>
+      <inertia ixx="0.00008562" ixy="-0.00000037" ixz="-0.00000042" iyy="0.00007515" iyz="-0.00000130" izz="0.00003722"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--box
+        size="0.001 0.001 0.001"/-->
+        <mesh filename="package://darwin_robot/meshes/thigh1_l.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="MP_THIGH2_L">
+    <inertial>
+      <origin xyz="-0.05363019 -0.00146633 -0.00268983"/>
+      <mass value="0.11904336"/>
+      <inertia ixx="0.00004095" ixy="0.00000040" ixz="-0.00000000" iyy="0.00014142" iyz="-0.00000000" izz="0.00012900"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--box
+        size="0.093 0.035 0.045"-->
+        <mesh filename="package://darwin_robot/meshes/thigh2_l.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.073 0.035 0.045" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="MP_TIBIA_L">
+    <inertial>
+      <origin xyz="-0.04151401 -0.00728036 -0.00007174"/>
+      <mass value="0.07030979"/>
+      <inertia ixx="0.00003954" ixy="0.00001143" ixz="0.00000000" iyy="0.00008393" iyz="0.00000000" izz="0.00008303"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--box
+        size="0.093 0.035 0.045"/-->
+        <mesh filename="package://darwin_robot/meshes/tibia_l.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.07 0.035 0.045" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="MP_ANKLE1_L">
+    <inertial>
+      <origin xyz="0.01049512 -0.01641222 0.00292719"/>
+      <mass value="0.16710792"/>
+      <inertia ixx="0.00010556" ixy="0.00000212" ixz="-0.00000053" iyy="0.00005216" iyz="0.00000059" izz="0.00012015"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--box
+        size="0.028652 0.08175 0.045"/-->
+        <mesh filename="package://darwin_robot/meshes/ankle1_l.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="MP_ANKLE2_L">
+    <inertial>
+      <origin xyz="-0.02535756 -0.00768464 0.00655215"/>
+      <mass value="0.07944620"/>
+      <inertia ixx="0.00008118" ixy="-0.00000176" ixz="-0.00000013" iyy="0.00006426" iyz="-0.00000037" izz="0.00002961"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--box
+        size="0.008 0.066 0.104"/-->
+        <mesh filename="package://darwin_robot/meshes/ankle2_l.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://darwin_robot/meshes/ankle2_l_coll.stl" scale="1 1 1" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="MP_PELVIS_R">
+    <inertial>
+      <origin xyz="-0.00013902 -0.00057833 0.00987102"/>
+      <mass value="0.19700000"/>
+      <inertia ixx="0.00006006" ixy="0.00000000" ixz="-0.00000000" iyy="0.00002864" iyz="-0.00000000" izz="0.00005141"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--box
+        size="0.045 0.08175 0.028652" /-->
+        <mesh filename="package://darwin_robot/meshes/pelvis_r.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="MP_THIGH1_R">
+    <inertial>
+      <origin xyz="0.00292717 -0.01049512 0.01641222"/>
+      <mass value="0.11904336"/>
+      <inertia ixx="0.00008559" ixy="0.00000038" ixz="-0.00000042" iyy="0.00007520" iyz="0.00000151" izz="0.00003716"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--box
+        size="0.001 0.001 0.001"/-->
+        <mesh filename="package://darwin_robot/meshes/thigh1_r.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="MP_THIGH2_R">
+    <inertial>
+      <origin xyz="0.05363019 -0.00144220 -0.00281756"/>
+      <mass value="0.11904336"/>
+      <inertia ixx="0.00004095" ixy="-0.00000040" ixz="-0.00000000" iyy="0.00014142" iyz="0.00000000" izz="0.00012900"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--box
+        size="0.093 0.035 0.045"/-->
+        <mesh filename="package://darwin_robot/meshes/thigh2_r.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.073 0.035 0.045" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="MP_TIBIA_R">
+    <inertial>
+      <origin xyz="0.04153485 -0.00729408 0.00011080"/>
+      <mass value="0.07030979"/>
+      <inertia ixx="0.00003954" ixy="-0.00001144" ixz="0.00000000" iyy="0.00008393" iyz="-0.00000000" izz="0.00008303"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--box
+        size="0.093 0.035 0.045"/-->
+        <mesh filename="package://darwin_robot/meshes/tibia_r.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.07 0.035 0.045" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="MP_ANKLE1_R">
+    <inertial>
+      <origin xyz="-0.01181841 -0.01641713 0.00293784"/>
+      <mass value="0.16710792"/>
+      <inertia ixx="0.00010549" ixy="-0.00000183" ixz="0.00000052" iyy="0.00005224" iyz="0.00000059" izz="0.00012019"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--box
+        size="0.028652 0.08175 0.045"/-->
+        <mesh filename="package://darwin_robot/meshes/ankle1_r.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+  </link>
+
+  <link name="MP_ANKLE2_R">
+    <inertial>
+      <origin xyz="0.02536373 -0.00779118 0.00656923"/>
+      <mass value="0.07944620"/>
+      <inertia ixx="0.00008118" ixy="0.00000176" ixz="0.00000013" iyy="0.00006426" iyz="-0.00000037" izz="0.00002961"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <!--box
+        size="0.008 0.066 0.104"/-->
+        <mesh filename="package://darwin_robot/meshes/ankle2_r.STL" scale="1 1 1" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://darwin_robot/meshes/ankle2_r_coll.stl" scale="1 1 1" />
+      </geometry>
+    </collision>
+
+  </link>
+
+  <link name="MP_PMDCAMBOARD">
+    <!--
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.032 0.005 0.032" />
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    -->
+  </link>
+
+  <link name="imu_link">
+    <xacro:unless value="$(arg is_classic_gz)">
+      <sensor name="imu" type="imu">
+        <always_on>true</always_on>
+        <update_rate>200</update_rate>
+        <topic>imu</topic>
+        <imu>
+          <angular_velocity>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+              </noise>
+            </z>
+          </angular_velocity>
+          <linear_acceleration>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-2</stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-2</stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-2</stddev>
+              </noise>
+            </z>
+          </linear_acceleration>
+        </imu>
+      </sensor>
+    </xacro:unless>
+  </link>
+
+  <joint name="j_imu" type="fixed">
+    <parent link="base_link" />
+    <child link="imu_link" />
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+  </joint>
+
+  <joint name="j_camboard" type="fixed">
+    <parent link="MP_HEAD" />
+    <child link="MP_PMDCAMBOARD" />
+    <origin xyz="0 0 0.0235" rpy="3.14159 1.5707963 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
+  </joint>
+
+  <joint
+    name="j_pan" type="revolute">
+    <parent link="MP_BODY" />
+    <child link="MP_NECK" />
+    <origin xyz="0 0 0.0235" rpy="0 0 1.5707963" />
+    <axis xyz="0 0 1" />
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
+  </joint>
+
+  <joint
+    name="j_tilt" type="revolute">
+    <parent link="MP_NECK" />
+    <child link="MP_HEAD" />
+    <origin xyz="0 0 0.02715" rpy="-1.5707963 0 1.5707963" />
+    <axis xyz="0 0 1" />
+    <limit effort="2.8" velocity="5.6548668" lower="-1.05" upper="0.52" />
+  </joint>
+
+  <joint
+    name="j_back_l" type="fixed">
+    <parent link="MP_BODY" />
+    <child link="MP_BACK_L" />
+    <origin xyz="0 0.06035 0" rpy="-1.5707963 0 0" />
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
+  </joint>
+
+  <joint
+    name="j_shoulder_l" type="revolute">
+    <parent link="MP_BACK_L" />
+    <child link="MP_SHOULDER_L" />
+    <origin xyz="0 0 0" rpy="0 0 -1.5707963" />
+    <axis xyz="0 0 1" />
+    <limit effort="2.8" velocity="5.6548668" lower="-4.36" upper="4.36" />
+  </joint>
+
+  <joint
+    name="j_high_arm_l" type="revolute">
+    <parent link="MP_SHOULDER_L" />
+    <child link="MP_ARM_HIGH_L" />
+    <origin xyz="-0.016 0 0.02165" rpy="1.5707963 1.5707963 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="2.8" velocity="5.648668" lower="-1.75" upper="1.58" />
+  </joint>
+
+  <joint
+    name="j_low_arm_l" type="revolute">
+    <parent link="MP_ARM_HIGH_L" />
+    <child link="MP_ARM_LOW_L" />
+    <origin xyz="-0.06 0 -0.016" rpy="-1.5707963 3.14159 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="2.8" velocity="5.6548668" lower="-2.97" upper="0.0" />
+  </joint>
+
+  <joint
+    name="j_wrist_l" type="fixed">
+    <parent link="MP_ARM_LOW_L" />
+    <child link="MP_ARM_GRIPPER_FIX_L" />
+    <origin xyz="0.048 0.016 0" rpy="1.5707963 0 0" />
+    <axis xyz="0 0 1" />
+  </joint>
+
+  <joint name="j_wrist_dummy_l" type="fixed">
+    <parent link="MP_ARM_GRIPPER_FIX_L" />
+    <child link="MP_ARM_GRIPPER_FIX_DUMMY_L" />
+    <origin xyz="0.064 -0.01 0" rpy="0 0 0" />
+  </joint>
+
+  <joint name="j_gripper_l" type="revolute">
+    <parent link="MP_ARM_GRIPPER_FIX_L" />
+    <child link="MP_ARM_GRIPPER_MOV_L" />
+    <origin xyz="0.048 0.01 0" rpy="0 0 1.0" />
+    <axis xyz="0 0 1" />
+    <limit effort="2.8" velocity="5.6548668" lower="-1.0" upper="0.0" />
+  </joint>
+
+  <joint
+    name="j_back_r" type="fixed">
+    <parent link="MP_BODY" />
+    <child link="MP_BACK_R" />
+    <origin xyz="0 -0.06035 0" rpy="1.5707963 0 0" />
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
+  </joint>
+
+  <joint
+    name="j_shoulder_r" type="revolute">
+    <parent link="MP_BACK_R" />
+    <child link="MP_SHOULDER_R" />
+    <origin xyz="0 0 0" rpy="0 0 -1.5707963" />
+    <axis xyz="0 0 1" />
+    <limit effort="2.8" velocity="5.6548668" lower="-4.36" upper="4.36" />
+  </joint>
+
+  <joint
+    name="j_high_arm_r" type="revolute">
+    <parent link="MP_SHOULDER_R" />
+    <child link="MP_ARM_HIGH_R" />
+    <origin xyz="0.016 0 0.02165" rpy="-1.5707963 1.5707963 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="2.8" velocity="5.648668" lower="-1.75" upper="1.58" />
+  </joint>
+
+  <joint
+    name="j_low_arm_r" type="revolute">
+    <parent link="MP_ARM_HIGH_R" />
+    <child link="MP_ARM_LOW_R" />
+    <origin xyz="-0.06 0 0.016" rpy="-1.5707963 3.14159 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="2.8" velocity="5.6548668" lower="-1.635" upper="2.6179939" />
+  </joint>
+
+  <joint
+    name="j_wrist_r" type="fixed">
+    <parent link="MP_ARM_LOW_R" />
+    <child link="MP_ARM_GRIPPER_FIX_R" />
+    <origin xyz="0.048 -0.016 0" rpy="1.5707963 0 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939" />
+  </joint>
+
+  <joint
+    name="j_wrist_dummy_r" type="fixed">
+    <parent link="MP_ARM_GRIPPER_FIX_R" />
+    <child link="MP_ARM_GRIPPER_FIX_DUMMY_R" />
+    <origin xyz="0.064 -0.01 0" rpy="0 0 0" />
+  </joint>
+
+  <joint name="j_gripper_r" type="revolute">
+    <parent link="MP_ARM_GRIPPER_FIX_R" />
+    <child link="MP_ARM_GRIPPER_MOV_R" />
+    <origin xyz="0.048 0.01 0" rpy="0 0 1.0" />
+    <axis xyz="0 0 1" />
+    <limit effort="2.8" velocity="5.6548668" lower="-1.0" upper="0.0" />
+  </joint>
+
+  <joint
+    name="j_pelvis_l" type="revolute">
+    <parent link="MP_BODY" />
+    <child link="MP_PELVIS_L" />
+    <origin xyz="-0.005 0.037 -0.09355" rpy="0 3.14159 -1.5707963" />
+    <axis xyz="0 0 1" />
+    <limit effort="10" velocity="5.6548668" lower="-0.79" upper="2.62" />
+  </joint>
+
+  <joint
+    name="j_thigh1_l" type="revolute">
+    <parent link="MP_PELVIS_L" />
+    <child link="MP_THIGH1_L" />
+    <origin xyz="0 0 0.028652" rpy="1.5707963 0 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="10" velocity="5.6548668" lower="-1.05" upper="0.0" />
+  </joint>
+
+  <joint
+    name="j_thigh2_l" type="revolute">
+    <parent link="MP_THIGH1_L" />
+    <child link="MP_THIGH2_L" />
+    <origin xyz="0 0 0" rpy="1.5707963 0 -1.5707963" />
+    <axis xyz="0 0 1" />
+    <limit effort="10" velocity="5.6548668" lower="-0.52" upper="1.75" />
+  </joint>
+
+  <joint
+    name="j_tibia_l" type="revolute">
+    <parent link="MP_THIGH2_L" />
+    <child link="MP_TIBIA_L" />
+    <origin xyz="-0.093 0 0" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="10" velocity="5.6548668" lower="-2.27" upper="0.0" />
+  </joint>
+
+  <joint
+    name="j_ankle1_l" type="revolute">
+    <parent link="MP_TIBIA_L" />
+    <child link="MP_ANKLE1_L" />
+    <origin xyz="-0.093 0 0" rpy="3.14159 0 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="10" velocity="5.6548668" lower="-1.05" upper="1.05" />
+  </joint>
+
+  <joint
+    name="j_ankle2_l" type="revolute">
+    <parent link="MP_ANKLE1_L" />
+    <child link="MP_ANKLE2_L" />
+    <origin xyz="0 0 0" rpy="-1.5707963 0 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="10" velocity="5.6548668" lower="-0.52" upper="1.05" />
+  </joint>
+
+  <joint
+    name="j_pelvis_r" type="revolute">
+    <parent link="MP_BODY" />
+    <child link="MP_PELVIS_R" />
+    <origin xyz="-0.005 -0.037 -0.09355" rpy="0 3.14159 1.5707963" />
+    <axis xyz="0 0 1" />
+    <limit effort="10" velocity="5.6548668" lower="-2.62" upper="0.79" />
+  </joint>
+
+  <joint
+    name="j_thigh1_r" type="revolute">
+    <parent link="MP_PELVIS_R" />
+    <child link="MP_THIGH1_R" />
+    <origin xyz="0 0 0.028652" rpy="-1.5707963 0 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="10" velocity="5.6548668" lower="0.0" upper="1.05" />
+  </joint>
+
+  <joint
+    name="j_thigh2_r" type="revolute">
+    <parent link="MP_THIGH1_R" />
+    <child link="MP_THIGH2_R" />
+    <origin xyz="0 0 0" rpy="1.5707963 0 -1.5707963" />
+    <axis xyz="0 0 1" />
+    <limit effort="10" velocity="5.6548668" lower="-1.75" upper="0.52" />
+  </joint>
+
+  <joint
+    name="j_tibia_r" type="revolute">
+    <parent link="MP_THIGH2_R" />
+    <child link="MP_TIBIA_R" />
+    <origin xyz="0.093 0 0" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="10" velocity="5.6548668" lower="0.0" upper="2.27" />
+  </joint>
+
+  <joint
+    name="j_ankle1_r" type="revolute">
+    <parent link="MP_TIBIA_R" />
+    <child link="MP_ANKLE1_R" />
+    <origin xyz="0.093 0 0" rpy="3.14159 0 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="10" velocity="5.6548668" lower="-1.05" upper="1.05" />
+  </joint>
+
+  <joint
+    name="j_ankle2_r" type="revolute">
+    <parent link="MP_ANKLE1_R" />
+    <child link="MP_ANKLE2_R" />
+    <origin xyz="0 0 0" rpy="-1.5707963 0 0" />
+    <axis xyz="0 0 1" />
+    <limit effort="10" velocity="5.6548668" lower="-0.52" upper="1.05" />
+  </joint>
+
+
+  <transmission name="t_j_pan">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_pan">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_pan">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_tilt">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_tilt">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_tilt">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_shoulder_l">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_shoulder_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_shoulder_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_high_arm_l">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_high_arm_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_high_arm_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_low_arm_l">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_low_arm_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_low_arm_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_wrist_l">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_wrist_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_wrist_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_gripper_l">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_gripper_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_gripper_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_shoulder_r">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_shoulder_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_shoulder_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_high_arm_r">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_high_arm_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_high_arm_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_low_arm_r">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_low_arm_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_low_arm_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_wrist_r">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_wrist_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_wrist_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_gripper_r">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_gripper_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_gripper_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_pelvis_l">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_pelvis_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_pelvis_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_thigh1_l">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_thigh1_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_thigh1_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_thigh2_l">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_thigh2_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_thigh2_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_tibia_l">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_tibia_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_tibia_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_ankle1_l">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_ankle1_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_ankle1_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_ankle2_l">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_ankle2_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_ankle2_l">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_pelvis_r">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_pelvis_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_pelvis_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_thigh1_r">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_thigh1_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_thigh1_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_thigh2_r">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_thigh2_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_thigh2_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_tibia_r">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_tibia_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_tibia_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_ankle1_r">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_ankle1_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_ankle1_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission
+    name="t_j_ankle2_r">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="j_ankle2_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="m_j_ankle2_r">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <gazebo
+    reference="MP_BODY">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_NECK">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_HEAD">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_BACK_L">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_SHOULDER_L">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_ARM_HIGH_L">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_ARM_LOW_L">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_ARM_GRIPPER_FIX_L">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_ARM_GRIPPER_FIX_DUMMY_L">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_ARM_GRIPPER_MOV_L">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_BACK_R">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_SHOULDER_R">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_ARM_HIGH_R">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_ARM_LOW_R">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_ARM_GRIPPER_FIX_R">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_ARM_GRIPPER_FIX_DUMMY_R">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_ARM_GRIPPER_MOV_R">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_PELVIS_L">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_THIGH1_L">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_THIGH2_L">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_TIBIA_L">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_ANKLE1_L">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_ANKLE2_L">
+
+
+    <material>Gazebo/Grey</material>
+
+    <mu1>9000</mu1>
+    <mu2>9000</mu2>
+    <kp>1000000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxContacts>1</maxContacts>
+  </gazebo>
+
+
+  <gazebo reference="MP_PELVIS_R">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_THIGH1_R">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_THIGH2_R">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_TIBIA_R">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_ANKLE1_R">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="MP_ANKLE2_R">
+
+
+    <material>Gazebo/Grey</material>
+
+
+    <mu1>9000</mu1>
+    <mu2>9000</mu2>
+    <kp>1000000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxContacts>1</maxContacts>
+  </gazebo>
+
+
+  <gazebo reference="MP_PMDCAMBOARD">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+
+  <gazebo reference="">
+
+
+    <material>Gazebo/Grey</material>
+
+  </gazebo>
+
+  <ros2_control name="ros2_control" type="system">
+    <hardware>
+      <xacro:if value="$(arg is_classic_gz)">
+        <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      </xacro:if>
+      <xacro:unless value="$(arg is_classic_gz)">
+        <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      </xacro:unless>
+    </hardware>
+    <joint name="j_pan">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_tilt">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+
+    <joint name="j_shoulder_l">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint
+      name="j_high_arm_l">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.7</param>
+        <!-- <param name="initial_value">0.0</param> -->
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint
+      name="j_low_arm_l">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">-1.0</param>
+        <!-- <param name="initial_value">0.0</param> -->
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_gripper_l">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">-0.99</param>
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+
+    <joint
+      name="j_shoulder_r">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint
+      name="j_high_arm_r">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.7</param>
+        <!-- <param name="initial_value">0.0</param> -->
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint
+      name="j_low_arm_r">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">1.0</param>
+        <!-- <param name="initial_value">0.0</param> -->
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_gripper_r">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">-0.99</param>
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_pelvis_l">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_thigh1_l">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_thigh2_l">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.4</param>
+        <!-- <param name="initial_value">0.0</param> -->
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_tibia_l">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">-0.6</param>
+        <!-- <param name="initial_value">0.0</param> -->
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_ankle1_l">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">-0.2</param>
+        <!-- <param name="initial_value">0.0</param> -->
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_ankle2_l">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_pelvis_r">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_thigh1_r">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_thigh2_r">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">-0.4</param>
+        <!-- <param name="initial_value">0.0</param> -->
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_tibia_r">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.6</param>
+        <!-- <param name="initial_value">0.0</param> -->
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_ankle1_r">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.2</param>
+        <!-- <param name="initial_value">0.0</param> -->
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+    <joint name="j_ankle2_r">
+      <command_interface name="position" />
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity" />
+      <state_interface name="effort" />
+    </joint>
+
+  </ros2_control>
+
+  <xacro:if value="$(arg is_classic_gz)">
+    <gazebo>
+      <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+        <parameters>$(arg simulation_controllers)</parameters>
+      </plugin>
+    </gazebo>
+    <gazebo reference="imu_link">
+      <sensor name="imu_sensor" type="imu">
+        <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+          <ros>
+            <namespace></namespace>
+            <remapping>~/out:=imu/data_raw</remapping>
+          </ros>
+          <initial_orientation_as_reference>false</initial_orientation_as_reference>
+        </plugin>
+        <always_on>true</always_on>
+        <update_rate>100</update_rate>
+        <visualize>true</visualize>
+      </sensor>
+    </gazebo>
+
+    <gazebo>
+      <plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
+        <ros>
+          <remapping>odom:=base_pose_ground_truth</remapping>
+        </ros>
+        <always_on>true</always_on>
+        <update_rate>50.0</update_rate>
+        <body_name>base_link</body_name>
+        <gaussian_noise>0.01</gaussian_noise>
+        <frame_name>map</frame_name>
+        <xyz_offset>0 0 0</xyz_offset>
+        <rpy_offset>0 0 0</rpy_offset>
+      </plugin>
+    </gazebo>
+  </xacro:if>
+
+  <xacro:unless value="$(arg is_classic_gz)">
+    <gazebo>
+      <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>$(arg simulation_controllers)</parameters>
+        <controller_manager_node_name>controller_manager</controller_manager_node_name>
+      </plugin>
+    </gazebo>
+
+    <plugin
+      filename="gz-sim-joint-state-publisher-system"
+      name="gz::sim::systems::JointStatePublisher">
+      <topic>joint_states</topic>
+      <joint_name>j_pan</joint_name>
+      <joint_name>j_tilt</joint_name>
+      <joint_name>j_pelvis_l</joint_name>
+      <joint_name>j_thigh1_l</joint_name>
+      <joint_name>j_thigh2_l</joint_name>
+      <joint_name>j_tibia_l</joint_name>
+      <joint_name>j_ankle1_l</joint_name>
+      <joint_name>j_ankle2_l</joint_name>
+      <joint_name>j_pelvis_r</joint_name>
+      <joint_name>j_thigh1_r</joint_name>
+      <joint_name>j_thigh2_r</joint_name>
+      <joint_name>j_tibia_r</joint_name>
+      <joint_name>j_ankle1_r</joint_name>
+      <joint_name>j_ankle2_r</joint_name>
+      <joint_name>j_shoulder_l</joint_name>
+      <joint_name>j_high_arm_l</joint_name>
+      <joint_name>j_low_arm_l</joint_name>
+      <joint_name>j_shoulder_r</joint_name>
+      <joint_name>j_high_arm_r</joint_name>
+      <joint_name>j_low_arm_r</joint_name>
+      <joint_name>j_gripper_l</joint_name>
+      <joint_name>j_gripper_r</joint_name>
+    </plugin>
+  </xacro:unless>
+
+
+</robot>

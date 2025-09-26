@@ -1,0 +1,1797 @@
+<?xml version="1.0"?>
+<sdf version='1.9'>
+  <model name='darwinOP'>
+    <link name='base_link'>
+      <inertial>
+        <pose>-0.0022902485409910579 -0.02919283308863458 -0.014552987181428509 0 0 0</pose>
+        <mass>1.29168331</mass>
+        <inertia>
+          <ixx>0.0055415110984690747</ixx>
+          <ixy>-2.876175164492914e-05</ixy>
+          <ixz>-1.4338087809325091e-05</ixz>
+          <iyy>0.0049998928009962387</iyy>
+          <iyz>-0.00048694213390179002</iyz>
+          <izz>0.0057362572657288216</izz>
+        </inertia>
+      </inertial>
+      <collision name='base_link_fixed_joint_lump__MP_BODY_collision'>
+        <pose>-0.02 0 -0.025000000000000001 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.10199999999999999 0.10000000000000001 0.080000000000000002</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode />
+          </contact>
+          <friction>
+            <ode />
+          </friction>
+        </surface>
+      </collision>
+      <visual name='base_link_fixed_joint_lump__MP_BODY_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/body.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__MP_BACK_L_visual_1'>
+        <pose>0 0.060350000000000001 0 -1.5707963000000003 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+      <visual name='base_link_fixed_joint_lump__MP_BACK_R_visual_2'>
+        <pose>0 -0.060350000000000001 0 1.5707963000000003 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.001 0.001 0.001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+      <sensor name="imu" type="imu">
+        <always_on>true</always_on>
+        <update_rate>200</update_rate>
+        <topic>imu</topic>
+        <imu>
+          <angular_velocity>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+              </noise>
+            </z>
+          </angular_velocity>
+          <linear_acceleration>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-2</stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-2</stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-2</stddev>
+              </noise>
+            </z>
+          </linear_acceleration>
+        </imu>
+      </sensor>
+    </link>
+    <joint name='j_shoulder_l' type='revolute'>
+      <pose relative_to='base_link'>0 0.060350000000000001 0 -1.5707963267948959 -1.5707962969925742
+        0</pose>
+      <parent>base_link</parent>
+      <child>MP_SHOULDER_L</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-4.3600000000000003</lower>
+          <upper>4.3600000000000003</upper>
+          <effort>2.7999999999999998</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_SHOULDER_L'>
+      <pose relative_to='j_shoulder_l'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.013522619 0.01026405 0.0013935747000000001 0 0 0</pose>
+        <mass>0.025913024</mass>
+        <inertia>
+          <ixx>0.0097758164999999994</ixx>
+          <ixy>0.0016911839000000001</ixy>
+          <ixz>-0.00045174328999999998</ixz>
+          <iyy>0.010511104</iyy>
+          <iyz>0.00033406955000000001</iyz>
+          <izz>0.0054767979999999997</izz>
+        </inertia>
+      </inertial>
+      <visual name='MP_SHOULDER_L_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/shoulder_l.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_high_arm_l' type='revolute'>
+      <pose relative_to='MP_SHOULDER_L'>-0.016 0 0.021649999999999999 1.5707963000000003
+        1.5707963009853283 0</pose>
+      <parent>MP_SHOULDER_L</parent>
+      <child>MP_ARM_HIGH_L</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.75</lower>
+          <upper>1.5800000000000001</upper>
+          <effort>2.7999999999999998</effort>
+          <velocity>5.6486679999999998</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_ARM_HIGH_L'>
+      <pose relative_to='j_high_arm_l'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.036239 0.00073399999999999995 0.00066 0 0 0</pose>
+        <mass>0.16837715</mass>
+        <inertia>
+          <ixx>0.012202839</ixx>
+          <ixy>-0.00020812626000000001</ixy>
+          <ixz>-8.8143448999999994e-05</ixz>
+          <iyy>0.0038088441000000001</iyy>
+          <iyz>0.00018251448</iyz>
+          <izz>0.01134083</izz>
+        </inertia>
+      </inertial>
+      <visual name='MP_ARM_HIGH_L_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/arm_high_l.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_low_arm_l' type='revolute'>
+      <pose relative_to='MP_ARM_HIGH_L'>-0.059999999999999998 0 -0.016 1.5707963535897931
+        2.6535897933558441e-06 3.1415926535897931</pose>
+      <parent>MP_ARM_HIGH_L</parent>
+      <child>MP_ARM_LOW_L</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-2.9700000000000002</lower>
+          <upper>0</upper>
+          <effort>2.7999999999999998</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_ARM_LOW_L'>
+      <pose relative_to='j_low_arm_l'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.025960636109365869 0.003195166776079908 -0.0029625984394137661 0 0 0</pose>
+        <mass>0.079288503999999996</mass>
+        <inertia>
+          <ixx>0.033095950358459518</ixx>
+          <ixy>0.0022729700075734081</ixy>
+          <ixz>-0.0041011286035792186</ixz>
+          <iyy>0.02496305121530705</iyy>
+          <iyz>-0.001011480071799785</iyz>
+          <izz>0.016464913839722879</izz>
+        </inertia>
+      </inertial>
+      <collision name='MP_ARM_LOW_L_fixed_joint_lump__MP_ARM_GRIPPER_FIX_L_collision'>
+        <pose>0.048000000000000001 0.016 0 1.5707963000000003 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.064000000000000001 0.032000000000000001 0.032000000000000001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode />
+          </contact>
+          <friction>
+            <ode />
+          </friction>
+        </surface>
+      </collision>
+      <visual name='MP_ARM_LOW_L_visual'>
+        <pose>0.016 0.016 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.032000000000000001 0.032000000000000001 0.035000000000000003</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+      <visual name='MP_ARM_LOW_L_fixed_joint_lump__MP_ARM_GRIPPER_FIX_L_visual_1'>
+        <pose>0.064000000000000001 0.016 0 1.5707963000000003 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.064000000000000001 0.032000000000000001 0.032000000000000001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+      <visual name='MP_ARM_LOW_L_fixed_joint_lump__MP_ARM_GRIPPER_FIX_DUMMY_L_visual_2'>
+        <pose>0.112 0.015999999732051039 -0.0099999999999999967 1.5707963000000003 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.032000000000000001 0.0050000000000000001 0.032000000000000001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_gripper_l' type='revolute'>
+      <pose relative_to='MP_ARM_LOW_L'>0.096000000000000002 0.016000000267948969
+        0.0099999999999999967 1.5707962772024813 -0.99999999999999956 4.1730578476270575e-08</pose>
+      <parent>MP_ARM_LOW_L</parent>
+      <child>MP_ARM_GRIPPER_MOV_L</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1</lower>
+          <upper>0</upper>
+          <effort>2.7999999999999998</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_ARM_GRIPPER_MOV_L'>
+      <pose relative_to='j_gripper_l'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>0.012202839</ixx>
+          <ixy>-0.00020812626000000001</ixy>
+          <ixz>-8.8143448999999994e-05</ixz>
+          <iyy>0.0038088441000000001</iyy>
+          <iyz>0.00018251448</iyz>
+          <izz>0.01134083</izz>
+        </inertia>
+      </inertial>
+      <visual name='MP_ARM_GRIPPER_MOV_L_fixed_joint_lump__VIS_MP_ARM_GRIPPER_MOV_L_visual'>
+        <pose>0.016 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.032000000000000001 0.0050000000000000001 0.032000000000000001</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+      <visual name='MP_ARM_GRIPPER_MOV_L_fixed_joint_lump__VIS_MP_ARM_GRIPPER_MOV_EXT_L_visual_1'>
+        <pose>0.031 -0.0025000000000000001 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.002 0.01 0.032000000000000001</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_shoulder_r' type='revolute'>
+      <pose relative_to='base_link'>0 -0.060350000000000001 0 1.5707963267948959 1.5707962969925742
+        0</pose>
+      <parent>base_link</parent>
+      <child>MP_SHOULDER_R</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-4.3600000000000003</lower>
+          <upper>4.3600000000000003</upper>
+          <effort>2.7999999999999998</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_SHOULDER_R'>
+      <pose relative_to='j_shoulder_r'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.013523 0.010264000000000001 0.0013940000000000001 0 0 0</pose>
+        <mass>0.025913024</mass>
+        <inertia>
+          <ixx>0.0097758164999999994</ixx>
+          <ixy>0.0016911839000000001</ixy>
+          <ixz>-0.00045174328999999998</ixz>
+          <iyy>0.010511104</iyy>
+          <iyz>0.00033406955000000001</iyz>
+          <izz>0.0054767979999999997</izz>
+        </inertia>
+      </inertial>
+      <visual name='MP_SHOULDER_R_visual'>
+        <pose>0 0 0 0 0 3.1400000000000001</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/shoulder_r.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_high_arm_r' type='revolute'>
+      <pose relative_to='MP_SHOULDER_R'>0.016 0 0.021649999999999999 -1.5707963000000003
+        1.5707963009853283 0</pose>
+      <parent>MP_SHOULDER_R</parent>
+      <child>MP_ARM_HIGH_R</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.75</lower>
+          <upper>1.5800000000000001</upper>
+          <effort>2.7999999999999998</effort>
+          <velocity>5.6486679999999998</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_ARM_HIGH_R'>
+      <pose relative_to='j_high_arm_r'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.036239 0.00073399999999999995 -0.00066 0 0 0</pose>
+        <mass>0.16837715</mass>
+        <inertia>
+          <ixx>0.012202839</ixx>
+          <ixy>-0.00020812626000000001</ixy>
+          <ixz>-8.8143448999999994e-05</ixz>
+          <iyy>0.0038088441000000001</iyy>
+          <iyz>0.00018251448</iyz>
+          <izz>0.01134083</izz>
+        </inertia>
+      </inertial>
+      <visual name='MP_ARM_HIGH_R_visual'>
+        <pose>0 0 0 3.1400000000000001 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/arm_high_r.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_low_arm_r' type='revolute'>
+      <pose relative_to='MP_ARM_HIGH_R'>-0.059999999999999998 0 0.016 1.5707963535897931
+        2.6535897933558441e-06 3.1415926535897931</pose>
+      <parent>MP_ARM_HIGH_R</parent>
+      <child>MP_ARM_LOW_R</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.635</lower>
+          <upper>2.6179939000000001</upper>
+          <effort>2.7999999999999998</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_ARM_LOW_R'>
+      <pose relative_to='j_low_arm_r'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.025960636109365869 -0.0048766212854024988 -0.0029625984394137661 0 0 0</pose>
+        <mass>0.079288503999999996</mass>
+        <inertia>
+          <ixx>0.11126888076797641</ixx>
+          <ixy>0.005507469368844403</ixy>
+          <ixz>3.7868577933081848e-05</ixz>
+          <iyy>0.044035927715307052</iyy>
+          <iyz>-0.0068541346887414029</iyz>
+          <izz>0.094629008949239743</izz>
+        </inertia>
+      </inertial>
+      <collision name='MP_ARM_LOW_R_fixed_joint_lump__MP_ARM_GRIPPER_FIX_R_collision'>
+        <pose>0.048000000000000001 -0.016 0 1.5707963000000003 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.064000000000000001 0.032000000000000001 0.032000000000000001</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode />
+          </contact>
+          <friction>
+            <ode />
+          </friction>
+        </surface>
+      </collision>
+      <visual name='MP_ARM_LOW_R_visual'>
+        <pose>0.016 -0.016 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.032000000000000001 0.032000000000000001 0.035000000000000003</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+      <visual name='MP_ARM_LOW_R_fixed_joint_lump__MP_ARM_GRIPPER_FIX_R_visual_1'>
+        <pose>0.064000000000000001 -0.016 0 1.5707963000000003 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.064000000000000001 0.032000000000000001 0.032000000000000001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+      <visual name='MP_ARM_LOW_R_fixed_joint_lump__MP_ARM_GRIPPER_FIX_DUMMY_R_visual_2'>
+        <pose>0.112 -0.016000000267948969 -0.0099999999999999967 1.5707963000000003 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.032000000000000001 0.0050000000000000001 0.032000000000000001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_gripper_r' type='revolute'>
+      <pose relative_to='MP_ARM_LOW_R'>0.096000000000000002 -0.015999999732051039
+        0.0099999999999999967 1.5707962772024813 -0.99999999999999956 4.1730578476270575e-08</pose>
+      <parent>MP_ARM_LOW_R</parent>
+      <child>MP_ARM_GRIPPER_MOV_R</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1</lower>
+          <upper>0</upper>
+          <effort>2.7999999999999998</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_ARM_GRIPPER_MOV_R'>
+      <pose relative_to='j_gripper_r'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>0.012202839</ixx>
+          <ixy>-0.00020812626000000001</ixy>
+          <ixz>-8.8143448999999994e-05</ixz>
+          <iyy>0.0038088441000000001</iyy>
+          <iyz>0.00018251448</iyz>
+          <izz>0.01134083</izz>
+        </inertia>
+      </inertial>
+      <visual name='MP_ARM_GRIPPER_MOV_R_fixed_joint_lump__VIS_MP_ARM_GRIPPER_MOV_R_visual'>
+        <pose>0.016 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.032000000000000001 0.0050000000000000001 0.032000000000000001</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+      <visual name='MP_ARM_GRIPPER_MOV_R_fixed_joint_lump__VIS_MP_ARM_GRIPPER_MOV_EXT_R_visual_1'>
+        <pose>0.031 -0.0025000000000000001 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.002 0.01 0.032000000000000001</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_pan' type='revolute'>
+      <pose relative_to='base_link'>0 0 0.0235 0 0 1.5707963000000003</pose>
+      <parent>base_link</parent>
+      <child>MP_NECK</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-2.6179939000000001</lower>
+          <upper>2.6179939000000001</upper>
+          <effort>2.7999999999999998</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_NECK'>
+      <pose relative_to='j_pan'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.0014239999999999999 -0.016566999999999998 -0.0071279999999999998 0 0 0</pose>
+        <mass>0.024357719</mass>
+        <inertia>
+          <ixx>0.0013699999999999999</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0014</iyy>
+          <iyz>0</iyz>
+          <izz>0.0016999999999999999</izz>
+        </inertia>
+      </inertial>
+      <visual name='MP_NECK_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/neck.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_tilt' type='revolute'>
+      <pose relative_to='MP_NECK'>0 0 0.027150000000000001 -1.5707963000000003
+        -5.5511151231257827e-17 1.5707963000000003</pose>
+      <parent>MP_NECK</parent>
+      <child>MP_HEAD</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.05</lower>
+          <upper>0.52000000000000002</upper>
+          <effort>2.7999999999999998</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_HEAD'>
+      <pose relative_to='j_tilt'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>6.3999999999999997e-05 -0.018565000000000002 -0.0076670000000000002 0 0 0</pose>
+        <mass>0.15804192</mass>
+        <inertia>
+          <ixx>0.0013699999999999999</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0014</iyy>
+          <iyz>0</iyz>
+          <izz>0.0016999999999999999</izz>
+        </inertia>
+      </inertial>
+      <collision name='MP_HEAD_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/head_coll.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode />
+          </contact>
+          <friction>
+            <ode />
+          </friction>
+        </surface>
+      </collision>
+      <visual name='MP_HEAD_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/head.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_pelvis_l' type='revolute'>
+      <pose relative_to='base_link'>-0.0050000000000000001 0.036999999999999998
+        -0.093549999999999994 3.1415926535897931 2.6535897933558441e-06 1.5707963535897931</pose>
+      <parent>base_link</parent>
+      <child>MP_PELVIS_L</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.79000000000000004</lower>
+          <upper>2.6200000000000001</upper>
+          <effort>10</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_PELVIS_L'>
+      <pose relative_to='j_pelvis_l'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0.00048000000000000001 0.018436999999999999 0 0 0</pose>
+        <mass>0.16700000000000001</mass>
+        <inertia>
+          <ixx>0.012259691</ixx>
+          <ixy>7.1127468999999995e-05</ixy>
+          <ixz>8.1143913000000003e-05</ixz>
+          <iyy>0.011066637000000001</iyy>
+          <iyz>-0.00071635475999999999</iyz>
+          <izz>0.0041877668000000002</izz>
+        </inertia>
+      </inertial>
+      <visual name='MP_PELVIS_L_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/pelvis_l.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_thigh1_l' type='revolute'>
+      <pose relative_to='MP_PELVIS_L'>0 0 0.028652 1.5707963000000003 0 0</pose>
+      <parent>MP_PELVIS_L</parent>
+      <child>MP_THIGH1_L</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.05</lower>
+          <upper>0</upper>
+          <effort>10</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_THIGH1_L'>
+      <pose relative_to='j_thigh1_l'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>7.8999999999999996e-05 0.018242000000000001 0.013873 0 0 0</pose>
+        <mass>0.11904336</mass>
+        <inertia>
+          <ixx>0.0097950272000000005</ixx>
+          <ixy>0.00012119368</ixy>
+          <ixz>-2.1223016e-05</ixz>
+          <iyy>0.0032848286999999999</iyy>
+          <iyz>-0.00019474021</iyz>
+          <izz>0.011493509000000001</izz>
+        </inertia>
+      </inertial>
+      <visual name='MP_THIGH1_L_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/thigh1_l.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_thigh2_l' type='revolute'>
+      <pose relative_to='MP_THIGH1_L'>0 0 0 1.5707963000000003 -5.5511151231257827e-17
+        -1.5707963000000003</pose>
+      <parent>MP_THIGH1_L</parent>
+      <child>MP_THIGH2_L</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.52000000000000002</lower>
+          <upper>1.75</upper>
+          <effort>10</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_THIGH2_L'>
+      <pose relative_to='j_thigh2_l'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.062964999999999993 -0.00032299999999999999 0.00069200000000000002 0 0 0</pose>
+        <mass>0.11904336</mass>
+        <inertia>
+          <ixx>0.0097950272000000005</ixx>
+          <ixy>0.00012119368</ixy>
+          <ixz>-2.1223016e-05</ixz>
+          <iyy>0.0032848286999999999</iyy>
+          <iyz>-0.00019474021</iyz>
+          <izz>0.011493509000000001</izz>
+        </inertia>
+      </inertial>
+      <collision name='MP_THIGH2_L_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.072999999999999995 0.035000000000000003 0.044999999999999998</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode />
+          </contact>
+          <friction>
+            <ode />
+          </friction>
+        </surface>
+      </collision>
+      <visual name='MP_THIGH2_L_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/thigh2_l.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_tibia_l' type='revolute'>
+      <pose relative_to='MP_THIGH2_L'>-0.092999999999999999 0 0 0 0 0</pose>
+      <parent>MP_THIGH2_L</parent>
+      <child>MP_TIBIA_L</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-2.27</lower>
+          <upper>0</upper>
+          <effort>10</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_TIBIA_L'>
+      <pose relative_to='j_tibia_l'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.053955000000000003 0.006548 -0.00059199999999999997 0 0 0</pose>
+        <mass>0.070309793999999995</mass>
+        <inertia>
+          <ixx>0.0093369608000000003</ixx>
+          <ixy>-9.3567395000000001e-05</ixy>
+          <ixz>-2.3992084999999999e-05</ixz>
+          <iyy>0.0046295533999999999</iyy>
+          <iyz>-0.0012858493</iyz>
+          <izz>0.011351516000000001</izz>
+        </inertia>
+      </inertial>
+      <collision name='MP_TIBIA_L_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.070000000000000007 0.035000000000000003 0.044999999999999998</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode />
+          </contact>
+          <friction>
+            <ode />
+          </friction>
+        </surface>
+      </collision>
+      <visual name='MP_TIBIA_L_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/tibia_l.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_ankle1_l' type='revolute'>
+      <pose relative_to='MP_TIBIA_L'>-0.092999999999999999 0 0 3.1415899999999999 0 0</pose>
+      <parent>MP_TIBIA_L</parent>
+      <child>MP_ANKLE1_L</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.05</lower>
+          <upper>1.05</upper>
+          <effort>10</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_ANKLE1_L'>
+      <pose relative_to='j_ankle1_l'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.000214 -0.018536 0.013873 0 0 0</pose>
+        <mass>0.16710791999999999</mass>
+        <inertia>
+          <ixx>0.012079174999999999</ixx>
+          <ixy>-7.9781067000000004e-05</ixy>
+          <ixz>-3.9322246e-05</ixz>
+          <iyy>0.010885465</iyy>
+          <iyz>0.00070770117</iyz>
+          <izz>0.0041871102999999996</izz>
+        </inertia>
+      </inertial>
+      <visual name='MP_ANKLE1_L_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/ankle1_l.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_ankle2_l' type='revolute'>
+      <pose relative_to='MP_ANKLE1_L'>0 0 0 -1.5707963000000003 0 0</pose>
+      <parent>MP_ANKLE1_L</parent>
+      <child>MP_ANKLE2_L</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.52000000000000002</lower>
+          <upper>1.05</upper>
+          <effort>10</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_ANKLE2_L'>
+      <pose relative_to='j_ankle2_l'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.025995000000000001 -0.0095060000000000006 -0.00050299999999999997 0 0 0</pose>
+        <mass>0.079446199999999995</mass>
+        <inertia>
+          <ixx>0.012079174999999999</ixx>
+          <ixy>-7.9781067000000004e-05</ixy>
+          <ixz>-3.9322246e-05</ixz>
+          <iyy>0.010885465</iyy>
+          <iyz>0.00070770117</iyz>
+          <izz>0.0041871102999999996</izz>
+        </inertia>
+      </inertial>
+      <collision name='MP_ANKLE2_L_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/ankle2_l_coll.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>10</kd>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>9000</mu>
+              <mu2>9000</mu2>
+            </ode>
+          </friction>
+        </surface>
+        <max_contacts>1</max_contacts>
+      </collision>
+      <visual name='MP_ANKLE2_L_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/ankle2_l.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_pelvis_r' type='revolute'>
+      <pose relative_to='base_link'>-0.0050000000000000001 -0.036999999999999998
+        -0.093549999999999994 3.1415926535897931 2.6535897933558441e-06 -1.5707963535897931</pose>
+      <parent>base_link</parent>
+      <child>MP_PELVIS_R</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-2.6200000000000001</lower>
+          <upper>0.79000000000000004</upper>
+          <effort>10</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_PELVIS_R'>
+      <pose relative_to='j_pelvis_r'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0.00048000000000000001 0.018436999999999999 0 0 0</pose>
+        <mass>0.19700000000000001</mass>
+        <inertia>
+          <ixx>0.012259691</ixx>
+          <ixy>7.1127468999999995e-05</ixy>
+          <ixz>8.1143913000000003e-05</ixz>
+          <iyy>0.011066637000000001</iyy>
+          <iyz>-0.00071635475999999999</iyz>
+          <izz>0.0041877668000000002</izz>
+        </inertia>
+      </inertial>
+      <visual name='MP_PELVIS_R_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/pelvis_r.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_thigh1_r' type='revolute'>
+      <pose relative_to='MP_PELVIS_R'>0 0 0.028652 -1.5707963000000003 0 0</pose>
+      <parent>MP_PELVIS_R</parent>
+      <child>MP_THIGH1_R</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>1.05</upper>
+          <effort>10</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_THIGH1_R'>
+      <pose relative_to='j_thigh1_r'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>7.8999999999999996e-05 -0.018242000000000001 0.0138735 0 0 0</pose>
+        <mass>0.11904336</mass>
+        <inertia>
+          <ixx>0.0097950272000000005</ixx>
+          <ixy>0.00012119368</ixy>
+          <ixz>-2.1223016e-05</ixz>
+          <iyy>0.0032848286999999999</iyy>
+          <iyz>-0.00019474021</iyz>
+          <izz>0.011493509000000001</izz>
+        </inertia>
+      </inertial>
+      <visual name='MP_THIGH1_R_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/thigh1_r.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_thigh2_r' type='revolute'>
+      <pose relative_to='MP_THIGH1_R'>0 0 0 1.5707963000000003 -5.5511151231257827e-17
+        -1.5707963000000003</pose>
+      <parent>MP_THIGH1_R</parent>
+      <child>MP_THIGH2_R</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.75</lower>
+          <upper>0.52000000000000002</upper>
+          <effort>10</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_THIGH2_R'>
+      <pose relative_to='j_thigh2_r'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.062964999999999993 -0.00032299999999999999 0.00069200000000000002 0 0 0</pose>
+        <mass>0.11904336</mass>
+        <inertia>
+          <ixx>0.0097950272000000005</ixx>
+          <ixy>0.00012119368</ixy>
+          <ixz>-2.1223016e-05</ixz>
+          <iyy>0.0032848286999999999</iyy>
+          <iyz>-0.00019474021</iyz>
+          <izz>0.011493509000000001</izz>
+        </inertia>
+      </inertial>
+      <collision name='MP_THIGH2_R_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.072999999999999995 0.035000000000000003 0.044999999999999998</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode />
+          </contact>
+          <friction>
+            <ode />
+          </friction>
+        </surface>
+      </collision>
+      <visual name='MP_THIGH2_R_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/thigh2_r.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_tibia_r' type='revolute'>
+      <pose relative_to='MP_THIGH2_R'>0.092999999999999999 0 0 0 0 0</pose>
+      <parent>MP_THIGH2_R</parent>
+      <child>MP_TIBIA_R</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>2.27</upper>
+          <effort>10</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_TIBIA_R'>
+      <pose relative_to='j_tibia_r'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.053955000000000003 0.006548 -0.00059199999999999997 0 0 0</pose>
+        <mass>0.070309793999999995</mass>
+        <inertia>
+          <ixx>0.0093369608000000003</ixx>
+          <ixy>-9.3567395000000001e-05</ixy>
+          <ixz>-2.3992084999999999e-05</ixz>
+          <iyy>0.0046295533999999999</iyy>
+          <iyz>-0.0012858493</iyz>
+          <izz>0.011351516000000001</izz>
+        </inertia>
+      </inertial>
+      <collision name='MP_TIBIA_R_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.070000000000000007 0.035000000000000003 0.044999999999999998</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode />
+          </contact>
+          <friction>
+            <ode />
+          </friction>
+        </surface>
+      </collision>
+      <visual name='MP_TIBIA_R_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/tibia_r.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_ankle1_r' type='revolute'>
+      <pose relative_to='MP_TIBIA_R'>0.092999999999999999 0 0 3.1415899999999999 0 0</pose>
+      <parent>MP_TIBIA_R</parent>
+      <child>MP_ANKLE1_R</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.05</lower>
+          <upper>1.05</upper>
+          <effort>10</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_ANKLE1_R'>
+      <pose relative_to='j_ankle1_r'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>-0.000214 -0.018536 -0.013873 0 0 0</pose>
+        <mass>0.16710791999999999</mass>
+        <inertia>
+          <ixx>0.012079174999999999</ixx>
+          <ixy>-7.9781067000000004e-05</ixy>
+          <ixz>-3.9322246e-05</ixz>
+          <iyy>0.010885465</iyy>
+          <iyz>0.00070770117</iyz>
+          <izz>0.0041871102999999996</izz>
+        </inertia>
+      </inertial>
+      <visual name='MP_ANKLE1_R_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/ankle1_r.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <joint name='j_ankle2_r' type='revolute'>
+      <pose relative_to='MP_ANKLE1_R'>0 0 0 -1.5707963000000003 0 0</pose>
+      <parent>MP_ANKLE1_R</parent>
+      <child>MP_ANKLE2_R</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.52000000000000002</lower>
+          <upper>1.05</upper>
+          <effort>10</effort>
+          <velocity>5.6548667999999997</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='MP_ANKLE2_R'>
+      <pose relative_to='j_ankle2_r'>0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.025995000000000001 -0.0095060000000000006 -0.00050299999999999997 0 0 0</pose>
+        <mass>0.079446199999999995</mass>
+        <inertia>
+          <ixx>0.012079174999999999</ixx>
+          <ixy>-7.9781067000000004e-05</ixy>
+          <ixz>-3.9322246e-05</ixz>
+          <iyy>0.010885465</iyy>
+          <iyz>0.00070770117</iyz>
+          <izz>0.0041871102999999996</izz>
+        </inertia>
+      </inertial>
+      <collision name='MP_ANKLE2_R_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/ankle2_r_coll.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>1000000</kp>
+              <kd>10</kd>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+          <friction>
+            <ode>
+              <mu>9000</mu>
+              <mu2>9000</mu2>
+            </ode>
+          </friction>
+        </surface>
+        <max_contacts>1</max_contacts>
+      </collision>
+      <visual name='MP_ANKLE2_R_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://darwin_robot/meshes/ankle2_r.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+          <diffuse>0.25 0.25 0.25 1</diffuse>
+          <ambient>0.25 0.25 0.25 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <plugin name='gz_ros2_control::GazeboSimROS2ControlPlugin' filename='gz_ros2_control-system'>
+      <parameters>
+        /home/sungwoo/humble_ws/install/darwin_robot/share/darwin_robot/params/controller.yaml</parameters>
+      <controller_manager_node_name>controller_manager</controller_manager_node_name>
+    </plugin>
+    <frame name='j_back_l' attached_to='MP_BODY'>
+      <pose>0 0.060350000000000001 0 -1.5707963000000003 0 0</pose>
+    </frame>
+    <frame name='MP_BACK_L' attached_to='j_back_l'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='j_wrist_dummy_l' attached_to='MP_ARM_GRIPPER_FIX_L'>
+      <pose>0.064000000000000001 -0.01 0 0 0 0</pose>
+    </frame>
+    <frame name='MP_ARM_GRIPPER_FIX_DUMMY_L' attached_to='j_wrist_dummy_l'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='j_wrist_l' attached_to='MP_ARM_LOW_L'>
+      <pose>0.048000000000000001 0.016 0 1.5707963000000003 0 0</pose>
+    </frame>
+    <frame name='MP_ARM_GRIPPER_FIX_L' attached_to='j_wrist_l'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='j_back_r' attached_to='MP_BODY'>
+      <pose>0 -0.060350000000000001 0 1.5707963000000003 0 0</pose>
+    </frame>
+    <frame name='MP_BACK_R' attached_to='j_back_r'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='j_wrist_dummy_r' attached_to='MP_ARM_GRIPPER_FIX_R'>
+      <pose>0.064000000000000001 -0.01 0 0 0 0</pose>
+    </frame>
+    <frame name='MP_ARM_GRIPPER_FIX_DUMMY_R' attached_to='j_wrist_dummy_r'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='j_wrist_r' attached_to='MP_ARM_LOW_R'>
+      <pose>0.048000000000000001 -0.016 0 1.5707963000000003 0 0</pose>
+    </frame>
+    <frame name='MP_ARM_GRIPPER_FIX_R' attached_to='j_wrist_r'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='base_link_to_body' attached_to='base_link'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='MP_BODY' attached_to='base_link_to_body'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='j_camboard' attached_to='MP_HEAD'>
+      <pose>0 0 0.0235 3.1415899999999999 1.5707963009853283 0</pose>
+    </frame>
+    <frame name='MP_PMDCAMBOARD' attached_to='j_camboard'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='j_imu' attached_to='base_link'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <frame name='imu_link' attached_to='j_imu'>
+      <pose>0 0 0 0 0 0</pose>
+    </frame>
+    <gazebo>
+      <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>/home/sungwoo/humble_ws/src/darwin_robot/params/controller.yaml</parameters>
+        <controller_manager_node_name>controller_manager</controller_manager_node_name>
+      </plugin>
+    </gazebo>
+    <ros2_control name="ros2_control" type="system">
+      <hardware>
+        <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      </hardware>
+      <joint name="j_pan">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_tilt">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+
+      <joint name="j_shoulder_l">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint
+        name="j_high_arm_l">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.7</param>
+          <!-- <param name="initial_value">0.0</param> -->
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint
+        name="j_low_arm_l">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">-1.0</param>
+          <!-- <param name="initial_value">0.0</param> -->
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_gripper_l">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">-0.99</param>
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+
+      <joint
+        name="j_shoulder_r">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint
+        name="j_high_arm_r">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.7</param>
+          <!-- <param name="initial_value">0.0</param> -->
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint
+        name="j_low_arm_r">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">1.0</param>
+          <!-- <param name="initial_value">0.0</param> -->
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_gripper_r">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">-0.99</param>
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_pelvis_l">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_thigh1_l">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_thigh2_l">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.4</param>
+          <!-- <param name="initial_value">0.0</param> -->
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_tibia_l">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">-0.6</param>
+          <!-- <param name="initial_value">0.0</param> -->
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_ankle1_l">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">-0.2</param>
+          <!-- <param name="initial_value">0.0</param> -->
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_ankle2_l">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_pelvis_r">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_thigh1_r">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_thigh2_r">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">-0.4</param>
+          <!-- <param name="initial_value">0.0</param> -->
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_tibia_r">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.6</param>
+          <!-- <param name="initial_value">0.0</param> -->
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_ankle1_r">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.2</param>
+          <!-- <param name="initial_value">0.0</param> -->
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+      <joint name="j_ankle2_r">
+        <command_interface name="position" />
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
+        <state_interface name="velocity" />
+        <state_interface name="effort" />
+      </joint>
+
+    </ros2_control>
+    <plugin
+      filename="gz-sim-joint-state-publisher-system"
+      name="gz::sim::systems::JointStatePublisher">
+      <topic>joint_states</topic>
+      <joint_name>j_pan</joint_name>
+      <joint_name>j_tilt</joint_name>
+      <joint_name>j_pelvis_l</joint_name>
+      <joint_name>j_thigh1_l</joint_name>
+      <joint_name>j_thigh2_l</joint_name>
+      <joint_name>j_tibia_l</joint_name>
+      <joint_name>j_ankle1_l</joint_name>
+      <joint_name>j_ankle2_l</joint_name>
+      <joint_name>j_pelvis_r</joint_name>
+      <joint_name>j_thigh1_r</joint_name>
+      <joint_name>j_thigh2_r</joint_name>
+      <joint_name>j_tibia_r</joint_name>
+      <joint_name>j_ankle1_r</joint_name>
+      <joint_name>j_ankle2_r</joint_name>
+      <joint_name>j_shoulder_l</joint_name>
+      <joint_name>j_high_arm_l</joint_name>
+      <joint_name>j_low_arm_l</joint_name>
+      <joint_name>j_shoulder_r</joint_name>
+      <joint_name>j_high_arm_r</joint_name>
+      <joint_name>j_low_arm_r</joint_name>
+      <joint_name>j_gripper_l</joint_name>
+      <joint_name>j_gripper_r</joint_name>
+    </plugin>
+    
+  <plugin name="gz::sim::systems::PosePublisher" filename="gz-sim-pose-publisher-system"/>
+  </model>
+</sdf>
