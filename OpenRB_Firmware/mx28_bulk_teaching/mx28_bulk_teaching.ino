@@ -428,12 +428,26 @@ void runTeachingMode(unsigned long currentTime) {
     return;
   }
   lastTeachingTime = currentTime;
+  struct __attribute__((packed)) {
+    uint8_t id = 0x01;
+    float positions[18];
+    float velocities[18];
+  } encoderData;
   
   // Implement impedance control for compliant teaching
   for (int i = 0; i < 18; i++) {
     float current_pos = getCurrentPosition(i+1);
     float current_vel = getCurrentVelocity(i+1);
     
+    if (i == 0 || i == 2) {
+      // Motor 1 and 3: inverted
+      encoderData.positions[i] = -(current_pos - offset[i]);
+      encoderData.velocities[i] = -current_vel;
+    } else {
+      encoderData.positions[i] = current_pos - offset[i];
+      encoderData.velocities[i] = current_vel;
+    }
+
     // Skip if velocity is too low (robot is stationary)
     if (abs(current_vel) < 0.2) {
       prev_positions[i] = current_pos;
@@ -441,6 +455,7 @@ void runTeachingMode(unsigned long currentTime) {
       continue;
     }
     
+
     // Calculate force based on position and velocity differences
     float pos_error = current_pos - prev_positions[i];
     float vel_error = current_vel - prev_velocities[i];
@@ -458,6 +473,8 @@ void runTeachingMode(unsigned long currentTime) {
     prev_positions[i] = current_pos;
     prev_velocities[i] = current_vel;
   }
+  
+  sendWithByteStuffing((uint8_t*)&encoderData, sizeof(encoderData));
 }
 
 float getCurrentPosition(int motor_id) {
