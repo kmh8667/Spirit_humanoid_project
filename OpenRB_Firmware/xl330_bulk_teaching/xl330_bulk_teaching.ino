@@ -61,10 +61,6 @@ uint16_t calculateCRC16(const uint8_t* data, size_t length) {
   return crc;
 }
 
-// motor ID 1, 3 direction should be inverted
-// Offset should be added for target positions, substracted for encoder readings
-// motor 3: +0.78 | motor 4: -0.78 | motor 5: -1.57 | motor 6: +1.57 
-float zero_positions[18] = {0.0};
 
 // Operating mode control
 enum RobotOperatingMode {
@@ -419,11 +415,22 @@ void runTeachingMode(unsigned long currentTime) {
   }
   lastTeachingTime = currentTime;
   
+  struct __attribute__((packed)) {
+    uint8_t id = 0x01;
+    float positions[18];
+    float velocities[18];
+  } encoderData;
   // Implement impedance control for compliant teaching
   for (int i = 0; i < 18; i++) {
     float current_pos = getCurrentPosition(i+1);
     float current_vel = getCurrentVelocity(i+1);
+    
+    encoderData.positions[i] = current_pos;
+    encoderData.velocities[i] = current_vel;
+
     if (abs(current_vel) < MOVE_THRESHOLD)
+      prev_positions[i] = current_pos;
+      prev_velocities[i] = current_vel;
       continue;
 
     // Calculate force based on position and velocity differences
@@ -441,6 +448,7 @@ void runTeachingMode(unsigned long currentTime) {
     prev_positions[i] = current_pos;
     prev_velocities[i] = current_vel;
   }
+  sendWithByteStuffing((uint8_t*)&encoderData, sizeof(encoderData));
 }
 
 float getCurrentPosition(int motor_id) {
