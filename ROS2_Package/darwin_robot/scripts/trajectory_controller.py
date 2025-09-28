@@ -9,74 +9,70 @@ import os
 from collections import deque
 import json
 
-# Windows-compatible imports
 if sys.platform == "win32":
     import msvcrt
 else:
     import select
 
-# Optional scipy import for cubic splines
 try:
     from scipy import interpolate
 except ImportError:
-    interpolate = None
+    print("scipy need to be installed")
+    exit()
 
-# Optional matplotlib import for plotting
 try:
     import matplotlib.pyplot as plt
 except ImportError:
-    plt = None
+    print("matplotlib need to be installed")
+    exit()
 
-
-motor_index = {
-    "j_pan": 19,
-    "j_pelvis_l": 8,
-    "j_pelvis_r": 7,
+robot_to_sim_idx = {
+    "j_shoulder_r": 3,
     "j_shoulder_l": 2,
-    "j_shoulder_r": 1,
-    "j_tilt": 20,
-    "j_thigh1_l": 10,
-    "j_thigh1_r": 9,
-    "j_high_arm_l": 4,
-    "j_high_arm_r": 3,
-    "j_thigh2_l": 12,
-    "j_thigh2_r": 11,
-    "j_low_arm_l": 6,
-    "j_low_arm_r": 5,
-    "j_tibia_l": 14,
+    "j_high_arm_r": 7,
+    "j_high_arm_l": 6,
+    "j_low_arm_r": 11,
+    "j_low_arm_l": 10,
+    "j_pelvis_r": 1,
+    "j_pelvis_l": 0,
+    "j_thigh1_r": 5,
+    "j_thigh1_l": 4,
+    "j_thigh2_r": 9,
+    "j_thigh2_l": 8,
     "j_tibia_r": 13,
-    "j_gripper_l": 22,  # not real
-    "j_gripper_r": 21,  # not real
-    "j_ankle1_l": 16,
+    "j_tibia_l": 12,
     "j_ankle1_r": 15,
-    "j_ankle2_l": 18,
+    "j_ankle1_l": 14,
     "j_ankle2_r": 17,
+    "j_ankle2_l": 16,
+    # "j_pan": 18,
+    # "j_tilt": 19,
 }
 
-sim_joint_names = [
-    "j_pelvis_l",
-    "j_pelvis_r",
-    "j_shoulder_l",
-    "j_shoulder_r",
-    "j_thigh1_l",
-    "j_thigh1_r",
-    "j_high_arm_l",
-    "j_high_arm_r",
-    "j_thigh2_l",
-    "j_thigh2_r",
-    "j_low_arm_l",
-    "j_low_arm_r",
-    "j_tibia_l",
-    "j_tibia_r",
-    "j_ankle1_l",
-    "j_ankle1_r",
-    "j_ankle2_l",
-    "j_ankle2_r",
-    "j_pan",
-    "j_tilt",
-    "j_gripper_r",
-    "j_gripper_l",
-]
+sim_to_robot_idx = {
+    "j_pelvis_l": 7,
+    "j_pelvis_r": 6,
+    "j_shoulder_l": 1,
+    "j_shoulder_r": 0,
+    "j_thigh1_l": 9,
+    "j_thigh1_r": 8,
+    "j_high_arm_l": 3,
+    "j_high_arm_r": 2,
+    "j_thigh2_l": 11,
+    "j_thigh2_r": 10,
+    "j_low_arm_l": 5,
+    "j_low_arm_r": 4,
+    "j_tibia_l": 13,
+    "j_tibia_r": 12,
+    "j_ankle1_l": 15,
+    "j_ankle1_r": 14,
+    "j_ankle2_l": 17,
+    "j_ankle2_r": 16,
+    # "j_pan": 18,
+    # "j_tilt": 19,
+    # "j_gripper_l": 21,  # not real
+    # "j_gripper_r": 20,  # not real
+}
 
 default_joint_pos = {
     "j_pan": 0.0,
@@ -217,11 +213,10 @@ class TrajectoryController:
     def __init__(
         self, serial_port="/dev/ttyACM0", serial_baud=921600, interpolation_method="linear"
     ):
-        # Set default positions in motor order
-        self.default_pos_inorder = [0.0 for _ in range(22)]
-        for name in sim_joint_names:
-            if name in motor_index:
-                self.default_pos_inorder[motor_index[name] - 1] = default_joint_pos[name]
+        # Set default positions in sim order
+        self.default_pos_sim = [0.0 for _ in range(18)]
+        for i, name in enumerate(list(sim_to_robot_idx.keys())):
+            self.default_pos_sim[i] = default_joint_pos[name]
 
         # Create UART connection with OpenRB
         self.port = serial.Serial(serial_port, serial_baud)
@@ -231,8 +226,8 @@ class TrajectoryController:
         self.q_vel = queue.Queue()
 
         # Cache for current positions
-        self.current_joint_pos = np.zeros(22)  # In sim order
-        self.current_joint_pos_raw = np.zeros(18)  # In motor order
+        self.current_joint_pos_sim = np.zeros(18)  # In sim order
+        self.current_joint_pos_robot = np.zeros(18)  # In robot order
 
         # Trajectory control
         self.trajectory_active = False
@@ -264,6 +259,8 @@ class TrajectoryController:
         # Start serial reading thread
         self.serial_thread = threading.Thread(target=self.read_serial, daemon=True)
         self.serial_thread.start()
+
+        self.create_sample_trajectory()
 
         print(f"Trajectory Controller initialized (interpolation: {self.interpolation_method})")
         print("Primary Commands:")
@@ -313,29 +310,25 @@ class TrajectoryController:
                         if packet_id == 0x01:  # Encoder data
                             encoder_data = self.parse_encoder_packet(destuffed_data)
                             if encoder_data:
-                                self.current_joint_pos_raw = encoder_data["positions"]
+                                self.current_joint_pos_robot = encoder_data["positions"]
 
                                 # Convert to sim order
-                                for i, name in enumerate(sim_joint_names):
-                                    if name in motor_index:
-                                        idx = motor_index[name] - 1
-                                        if idx < 18:
-                                            self.current_joint_pos[i] = (
-                                                self.current_joint_pos_raw[idx]
-                                                # - self.default_pos_inorder[idx]
-                                            )
+                                for robot_idx, sim_idx in enumerate(
+                                    list(robot_to_sim_idx.values())
+                                ):
+                                    self.current_joint_pos_sim[sim_idx] = (
+                                        self.current_joint_pos_robot[robot_idx]
+                                    )
 
                                 # Log actual positions if logging is active
                                 if self.logging_active:
                                     current_time = time.time() - self.log_start_time
                                     self.actual_positions_log.append(
-                                        (current_time, self.current_joint_pos.copy())
+                                        (current_time, self.current_joint_pos_sim.copy())
                                     )
 
-                        elif packet_id == 0x02:  # IMU data (not currently processed)
-                            pass  # Could add IMU processing here if needed
-
-                        # Note: packet_id 0x04 torque commands don't send confirmation
+                        elif packet_id == 0x02:  # IMU data (not used in trajectory)
+                            pass
 
                     buffer = buffer[expected_size:]
 
@@ -482,8 +475,9 @@ class TrajectoryController:
         complete_packet = header + length + stuffed_data
 
         self.port.write(complete_packet)
-        # Update local state immediately (no confirmation packet)
+
         self.teaching_mode_enabled = enable
+
         print(f"Teaching mode {'ENABLED' if enable else 'DISABLED'}")
         if enable:
             print("Robot is now compliant for direct teaching")
@@ -496,20 +490,19 @@ class TrajectoryController:
             timestamp = time.strftime("%Y%m%d_%H%M%S")
             filename = f"trajectory_waypoint_{timestamp}.txt"
 
-        # Wait a moment to ensure we have recent data
         time.sleep(0.1)
 
         with open(filename, "w") as f:
             f.write("# Joint positions saved at {}\n".format(time.strftime("%Y-%m-%d %H:%M:%S")))
             f.write(
-                "# Format: 22 joint positions (in sim_joint_names order) followed by time_from_start\n"
+                "# Format: 18 joint positions (in sim_joint_names order) followed by time_from_start\n"
             )
             f.write(
-                "# j_pelvis_l j_pelvis_r j_shoulder_l j_shoulder_r j_thigh1_l j_thigh1_r j_high_arm_l j_high_arm_r j_thigh2_l j_thigh2_r j_low_arm_l j_low_arm_r j_tibia_l j_tibia_r j_ankle1_l j_ankle1_r j_ankle2_l j_ankle2_r j_pan j_tilt j_gripper_r j_gripper_l time_from_start\n"
+                "# j_pelvis_l j_pelvis_r j_shoulder_l j_shoulder_r j_thigh1_l j_thigh1_r j_high_arm_l j_high_arm_r j_thigh2_l j_thigh2_r j_low_arm_l j_low_arm_r j_tibia_l j_tibia_r j_ankle1_l j_ankle1_r j_ankle2_l j_ankle2_r time_from_start\n"
             )
 
-            # Write current positions in trajectory format: 22 positions + time
-            pos_str = " ".join([f"{self.current_joint_pos[i]:.6f}" for i in range(22)])
+            # Write current positions in trajectory format: 18 positions + time
+            pos_str = " ".join([f"{self.current_joint_pos_sim[i]:.6f}" for i in range(18)])
             f.write(f"{pos_str} {timestamp_value:.3f}\n")
 
         print(
@@ -526,7 +519,7 @@ class TrajectoryController:
 
         # Initialize trajectory collection
         self.collecting_trajectory = True
-        self.collection_filename = filename
+        self.collection_filename = filename + ".txt"
         self.collection_waypoints = []
         self.waypoint_counter = 0.0
 
@@ -544,7 +537,7 @@ class TrajectoryController:
         time.sleep(0.1)
 
         # Get current joint positions
-        current_positions = self.current_joint_pos.copy()
+        current_positions = self.current_joint_pos_sim.copy()
 
         # Add waypoint with current timestamp
         waypoint = (self.waypoint_counter, current_positions.tolist())
@@ -572,7 +565,7 @@ class TrajectoryController:
             with open(self.collection_filename, "w") as f:
                 f.write("# Trajectory created at {}\n".format(time.strftime("%Y-%m-%d %H:%M:%S")))
                 f.write(
-                    "# Format: 22 joint positions (in sim_joint_names order) followed by time_from_start\n"
+                    "# Format: 18 joint positions (in sim_joint_names order) followed by time_from_start\n"
                 )
                 f.write(
                     "# j_pelvis_l j_pelvis_r j_shoulder_l j_shoulder_r j_thigh1_l j_thigh1_r j_high_arm_l j_high_arm_r j_thigh2_l j_thigh2_r j_low_arm_l j_low_arm_r j_tibia_l j_tibia_r j_ankle1_l j_ankle1_r j_ankle2_l j_ankle2_r j_pan j_tilt j_gripper_r j_gripper_l time_from_start\n"
@@ -580,7 +573,7 @@ class TrajectoryController:
 
                 # Write all collected waypoints
                 for timestamp, positions in self.collection_waypoints:
-                    pos_str = " ".join([f"{positions[i]:.6f}" for i in range(22)])
+                    pos_str = " ".join([f"{positions[i]:.6f}" for i in range(18)])
                     f.write(f"{pos_str} {timestamp:.3f}\n")
 
             print(
@@ -624,7 +617,7 @@ class TrajectoryController:
         - If current pose is similar to first trajectory point: skips to second point with adjusted timing
         """
         try:
-            with open(filename, "r") as f:
+            with open(filename + ".txt", "r") as f:
                 lines = f.readlines()
 
             self.trajectory_waypoints = []
@@ -632,7 +625,7 @@ class TrajectoryController:
                 line = line.strip()
                 if line and not line.startswith("#"):
                     parts = line.split()
-                    if len(parts) == 23:  # 22 joint positions + time
+                    if len(parts) == 19:  # 22 joint positions + time
                         positions = [float(x) for x in parts[:-1]]
                         timestamp = float(parts[-1])
                         self.trajectory_waypoints.append((timestamp, positions))
@@ -662,28 +655,20 @@ class TrajectoryController:
             print(f"Error loading trajectory: {e}")
             return False
 
-    def create_sample_trajectory(self, filename="sample_trajectory.txt"):
+    def create_sample_trajectory(self, filename="demo"):
         """Create a sample trajectory file for demonstration"""
-        with open(filename, "w") as f:
+        with open(filename + ".txt", "w") as f:
             f.write("# Sample trajectory: Zero pose -> Default pose -> Zero pose\n")
-            f.write(
-                "# Format: 22 joint positions (in sim_joint_names order) followed by time_from_start\n"
-            )
+            f.write("# Format: 18 joint positions in sim order followed by time_from_start\n")
             f.write(
                 "# j_pelvis_l j_pelvis_r j_shoulder_l j_shoulder_r j_thigh1_l j_thigh1_r j_high_arm_l j_high_arm_r j_thigh2_l j_thigh2_r j_low_arm_l j_low_arm_r j_tibia_l j_tibia_r j_ankle1_l j_ankle1_r j_ankle2_l j_ankle2_r j_pan j_tilt j_gripper_r j_gripper_l time_from_start\n"
             )
 
-            # Create default pose positions (in sim_joint_names order)
-            default_pose = [0.0] * 22
-            for i, name in enumerate(sim_joint_names):
-                if name in default_joint_pos:
-                    default_pose[i] = default_joint_pos[name]
-
             # Create waypoints: zero -> default -> zero
             waypoints = [
-                (0.0, [0.0] * 22),  # Zero pose (all joints at 0)
-                (2.0, default_pose),  # Default standing pose
-                (4.0, [0.0] * 22),  # Return to zero pose
+                (0.0, [0.0] * 18),  # Zero pose (all joints at 0)
+                (2.0, self.default_pos_sim),  # Default pose
+                (4.0, [0.0] * 18),  # Return to zero pose
             ]
 
             # Write waypoints to file
@@ -702,7 +687,7 @@ class TrajectoryController:
 
         # Get current joint positions (fresh capture since torque is enabled)
         time.sleep(0.1)
-        current_pose = self.current_joint_pos.copy()
+        current_pose = self.current_joint_pos_sim.copy()
 
         # Get original first waypoint
         first_time, first_positions = self.trajectory_waypoints[0]
@@ -711,10 +696,9 @@ class TrajectoryController:
         position_error = 0.0
         valid_joints = 0
         for i in range(min(len(current_pose), len(first_positions))):
-            if i < 18:  # Only check actual motor joints (18 motors)
-                error = abs(current_pose[i] - first_positions[i])
-                position_error += error * error
-                valid_joints += 1
+            error = abs(current_pose[i] - first_positions[i])
+            position_error += error * error
+            valid_joints += 1
 
         if valid_joints > 0:
             rms_error = (position_error / valid_joints) ** 0.5
@@ -796,34 +780,17 @@ class TrajectoryController:
             ax = axes[row, col]
 
             # Find corresponding sim joint for this motor index
-            motor_id = i + 1
-            joint_name = None
-            for name, idx in motor_index.items():
-                if idx == motor_id:
-                    joint_name = name
-                    break
+            joint_name, idx = list(robot_to_sim_idx.items())[i]
+            # Plot interpolated trajectory (solid black line)
+            joint_positions = positions[:, idx]
+            ax.plot(times, joint_positions, "k-", linewidth=1.5, label="Target")
 
-            if joint_name and joint_name in sim_joint_names:
-                sim_idx = sim_joint_names.index(joint_name)
+            # Plot actual positions (dashed black line) if available
+            if len(actual_positions) > 0:
+                actual_joint_positions = actual_positions[:, idx]
+                ax.plot(actual_times, actual_joint_positions, "k--", linewidth=1.5, label="Actual")
 
-                # Plot interpolated trajectory (solid black line)
-                joint_positions = positions[:, sim_idx]
-                ax.plot(times, joint_positions, "k-", linewidth=1.5, label="Target")
-
-                # Plot actual positions (dashed black line) if available
-                if len(actual_positions) > 0:
-                    actual_joint_positions = actual_positions[:, sim_idx]
-                    ax.plot(
-                        actual_times, actual_joint_positions, "k--", linewidth=1.5, label="Actual"
-                    )
-            else:
-                # If no mapping found, use zeros
-                joint_positions = np.zeros(len(times))
-                ax.plot(times, joint_positions, "k-", linewidth=1.5, label="Target")
-
-            # Use joint name if found, otherwise motor ID
-            title = joint_name if joint_name else f"Motor {motor_id}"
-            ax.set_title(title, fontsize=10)
+            ax.set_title(joint_name, fontsize=10)
             ax.set_ylim(-2.35, 2.35)
             ax.grid(True, alpha=0.3)
             ax.set_xlabel("Time (s)", fontsize=8)
@@ -917,7 +884,7 @@ class TrajectoryController:
 
             # Create cubic splines for each joint
             splines = []
-            for joint_idx in range(22):
+            for joint_idx in range(18):
                 joint_values = [pos[joint_idx] for pos in cleaned_positions]
                 spline = interpolate.CubicSpline(cleaned_times, joint_values, bc_type="natural")
                 splines.append(spline)
@@ -929,7 +896,7 @@ class TrajectoryController:
             current_time = start_time
             while current_time <= actual_end_time:
                 interpolated_pos = []
-                for joint_idx in range(22):
+                for joint_idx in range(18):
                     value = float(splines[joint_idx](current_time))
                     interpolated_pos.append(value)
 
@@ -971,7 +938,7 @@ class TrajectoryController:
 
         # Interpolate each joint
         interpolated_pos = []
-        for i in range(22):
+        for i in range(18):
             interp_val = pos1[i] + alpha * (pos2[i] - pos1[i])
             interpolated_pos.append(interp_val)
 
@@ -1016,16 +983,13 @@ class TrajectoryController:
 
             # Convert and send initial position
             motor_positions = [0.0] * 18
-            for i, name in enumerate(sim_joint_names):
-                if name in motor_index:
-                    motor_idx = motor_index[name] - 1
-                    if motor_idx < 18:
-                        target_pos = initial_positions[i]
-                        # Apply joint limits
-                        if name in joint_pos_clip:
-                            min_pos, max_pos = joint_pos_clip[name]
-                            target_pos = np.clip(target_pos, min_pos, max_pos)
-                        motor_positions[motor_idx] = target_pos
+            for i, (name, robot_idx) in enumerate(list(sim_to_robot_idx.items())):
+                target_pos = initial_positions[i]
+                # Apply joint limits
+                if name in joint_pos_clip:
+                    min_pos, max_pos = joint_pos_clip[name]
+                    target_pos = np.clip(target_pos, min_pos, max_pos)
+                motor_positions[robot_idx] = target_pos
 
             self.send_target_positions(motor_positions)
             print("Sent initial position to ensure smooth trajectory start")
@@ -1039,21 +1003,17 @@ class TrajectoryController:
                 current_time >= target_time
                 and (current_time - last_send_time) >= self.trajectory_dt
             ):
-                # Convert sim order to motor order and add default offsets
+                # Convert sim order to robot order
                 motor_positions = [0.0] * 18
-                for i, name in enumerate(sim_joint_names):
-                    if name in motor_index:
-                        motor_idx = motor_index[name] - 1
-                        if motor_idx < 18:
-                            # target_pos = self.default_pos_inorder[motor_idx] + target_positions[i]
-                            target_pos = target_positions[i]
+                for i, (name, robot_idx) in enumerate(list(sim_to_robot_idx.items())):
+                    target_pos = target_positions[i]
 
-                            # Apply joint limits
-                            if name in joint_pos_clip:
-                                min_pos, max_pos = joint_pos_clip[name]
-                                target_pos = np.clip(target_pos, min_pos, max_pos)
+                    # Apply joint limits
+                    if name in joint_pos_clip:
+                        min_pos, max_pos = joint_pos_clip[name]
+                        target_pos = np.clip(target_pos, min_pos, max_pos)
 
-                            motor_positions[motor_idx] = target_pos
+                    motor_positions[robot_idx] = target_pos
 
                 self.send_target_positions(motor_positions)
                 last_send_time = current_time
@@ -1235,18 +1195,12 @@ class TrajectoryController:
             print("  save <time> - Save current joint positions with specified timestamp")
             print()
             print("  === Trajectory Execution ===")
-            print(
-                "  load <filename> - Load and execute trajectory starting from current pose"
-            )
+            print("  load <filename> - Load and execute trajectory starting from current pose")
             print("    Uses smart transition timing based on first trajectory point")
             print("    Skips transition automatically if position error < 0.1 rad")
-            print(
-                "  load_w_interp <filename> <method> - Load with specific interpolation method"
-            )
+            print("  load_w_interp <filename> <method> - Load with specific interpolation method")
             print("    Example: load_w_interp demo.txt cubic  (load with cubic spline)")
-            print(
-                "    Example: load_w_interp demo.txt linear  (load with linear interpolation)"
-            )
+            print("    Example: load_w_interp demo.txt linear  (load with linear interpolation)")
             print("    Methods: 'linear' or 'cubic'")
             print("  stop - Stop current trajectory")
             print("  sample - Create sample trajectory file")
