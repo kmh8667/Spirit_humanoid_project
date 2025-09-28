@@ -211,8 +211,15 @@ def reset_crc_statistics():
 
 class TrajectoryController:
     def __init__(
-        self, serial_port="/dev/ttyACM0", serial_baud=921600, interpolation_method="linear"
+        self,
+        serial_port="/dev/ttyACM0",
+        serial_baud=921600,
+        interpolation_method="linear",
+        robot_name="darwin",
     ):
+        # Robot identification
+        self.robot_name = robot_name
+
         # Set default positions in sim order
         self.default_pos_sim = [0.0 for _ in range(18)]
         for i, name in enumerate(list(sim_to_robot_idx.keys())):
@@ -263,6 +270,7 @@ class TrajectoryController:
         self.create_sample_trajectory()
 
         print(f"Trajectory Controller initialized (interpolation: {self.interpolation_method})")
+        print(f"Robot: {self.robot_name}")
         print("Primary Commands:")
         print("  'create <filename>' - Start new trajectory collection")
         print("  'add' - Add current joint positions as waypoint")
@@ -494,6 +502,7 @@ class TrajectoryController:
 
         with open(filename, "w") as f:
             f.write("# Joint positions saved at {}\n".format(time.strftime("%Y-%m-%d %H:%M:%S")))
+            f.write(f"# Robot: {self.robot_name}\n")
             f.write(
                 "# Format: 18 joint positions (in sim_joint_names order) followed by time_from_start\n"
             )
@@ -519,9 +528,9 @@ class TrajectoryController:
 
         # Initialize trajectory collection
         self.collecting_trajectory = True
-        self.collection_filename = filename + ".txt"
+        self.collection_filename = filename + "_darwin.txt"
         self.collection_waypoints = []
-        self.waypoint_counter = 0.0
+        self.waypoint_counter = 1.0
 
         print(f"Started new trajectory collection: {filename}")
         print("Use 'add' to add waypoints, 'save' to save and close")
@@ -564,6 +573,7 @@ class TrajectoryController:
         try:
             with open(self.collection_filename, "w") as f:
                 f.write("# Trajectory created at {}\n".format(time.strftime("%Y-%m-%d %H:%M:%S")))
+                f.write(f"# Robot: {self.robot_name}\n")
                 f.write(
                     "# Format: 18 joint positions (in sim_joint_names order) followed by time_from_start\n"
                 )
@@ -584,7 +594,7 @@ class TrajectoryController:
             self.collecting_trajectory = False
             self.collection_filename = None
             self.collection_waypoints = []
-            self.waypoint_counter = 0.0
+            self.waypoint_counter = 1.0
 
             return True
 
@@ -617,8 +627,28 @@ class TrajectoryController:
         - If current pose is similar to first trajectory point: skips to second point with adjusted timing
         """
         try:
-            with open(filename + ".txt", "r") as f:
+            with open(filename + "_darwin.txt", "r") as f:
                 lines = f.readlines()
+
+            # Validate robot name
+            robot_name_found = None
+            for line in lines:
+                line = line.strip()
+                if line.startswith("# Robot:"):
+                    robot_name_found = line.split(":", 1)[1].strip()
+                    break
+
+            if robot_name_found is None:
+                print(f"Error: No robot name found in trajectory file {filename}")
+                print("This trajectory file is missing robot identification")
+                return False
+
+            if robot_name_found != self.robot_name:
+                print(f"Error: Robot name mismatch!")
+                print(f"  File robot: {robot_name_found}")
+                print(f"  Current robot: {self.robot_name}")
+                print("Cannot load trajectory for different robot")
+                return False
 
             self.trajectory_waypoints = []
             for line in lines:
@@ -657,8 +687,9 @@ class TrajectoryController:
 
     def create_sample_trajectory(self, filename="demo"):
         """Create a sample trajectory file for demonstration"""
-        with open(filename + ".txt", "w") as f:
+        with open(filename + "_darwin.txt", "w") as f:
             f.write("# Sample trajectory: Zero pose -> Default pose -> Zero pose\n")
+            f.write(f"# Robot: {self.robot_name}\n")
             f.write("# Format: 18 joint positions in sim order followed by time_from_start\n")
             f.write(
                 "# j_pelvis_l j_pelvis_r j_shoulder_l j_shoulder_r j_thigh1_l j_thigh1_r j_high_arm_l j_high_arm_r j_thigh2_l j_thigh2_r j_low_arm_l j_low_arm_r j_tibia_l j_tibia_r j_ankle1_l j_ankle1_r j_ankle2_l j_ankle2_r j_pan j_tilt j_gripper_r j_gripper_l time_from_start\n"
@@ -666,9 +697,9 @@ class TrajectoryController:
 
             # Create waypoints: zero -> default -> zero
             waypoints = [
-                (0.0, [0.0] * 18),  # Zero pose (all joints at 0)
-                (2.0, self.default_pos_sim),  # Default pose
-                (4.0, [0.0] * 18),  # Return to zero pose
+                (2.0, [0.0] * 18),  # Zero pose (all joints at 0)
+                (4.0, self.default_pos_sim),  # Default pose
+                (6.0, [0.0] * 18),  # Return to zero pose
             ]
 
             # Write waypoints to file
@@ -1233,25 +1264,32 @@ class TrajectoryController:
 
 
 if __name__ == "__main__":
-    # Default serial port for Windows
+    # Default parameters
     serial_port = "COM5"  # Change this to match your OpenRB port
     interpolation_method = "linear"  # Default to linear interpolation
+    robot_name = "darwin"  # Default robot name
 
     if len(sys.argv) > 1:
         serial_port = sys.argv[1]
     if len(sys.argv) > 2:
         interpolation_method = sys.argv[2]
+    if len(sys.argv) > 3:
+        robot_name = sys.argv[3]
 
     try:
         controller = TrajectoryController(
-            serial_port=serial_port, interpolation_method=interpolation_method
+            serial_port=serial_port,
+            interpolation_method=interpolation_method,
+            robot_name=robot_name,
         )
         controller.run_interactive()
     except ImportError:
         print("Error: scipy is required for cubic spline interpolation")
         print("Install with: pip install scipy")
         print("Falling back to linear interpolation...")
-        controller = TrajectoryController(serial_port=serial_port, interpolation_method="linear")
+        controller = TrajectoryController(
+            serial_port=serial_port, interpolation_method="linear", robot_name=robot_name
+        )
         controller.run_interactive()
     except serial.SerialException as e:
         print(f"Serial connection error: {e}")
