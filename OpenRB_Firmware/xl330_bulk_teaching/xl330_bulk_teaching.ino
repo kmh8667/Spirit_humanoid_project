@@ -9,6 +9,7 @@ Dynamixel2Arduino dxl(Serial1, -1);
 
 MPU9250_DMP imu;
 
+const int num_motors = 14;
 // CRC16-CCITT lookup table for fast calculation (polynomial: 0x1021)
 const uint16_t CRC16_TABLE[256] PROGMEM = {
   0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
@@ -73,8 +74,8 @@ RobotOperatingMode current_mode = NORMAL_MODE;
 const float MOVE_THRESHOLD = 0.2;
 float kp_impedance = 15.0;
 float kd_impedance = 2.0;
-float prev_positions[18] = {0};
-float prev_velocities[18] = {0};
+float prev_positions[num_motors] = {0};
+float prev_velocities[num_motors] = {0};
 unsigned long lastTeachingTime = 0;
 const unsigned long TEACHING_INTERVAL = 20000; // 50Hz for teaching mode
 
@@ -241,14 +242,14 @@ void processTargetPositionPacket(uint8_t* destuffed_data, size_t data_size) {
     return; // CRC mismatch
   }
   
-  // Extract 18 target positions (float values) from payload
-  float target_positions[18];
-  for (int i = 0; i < 18; i++) {
+  // Extract num_motors target positions (float values) from payload
+  float target_positions[num_motors];
+  for (int i = 0; i < num_motors; i++) {
     memcpy(&target_positions[i], &destuffed_data[1 + i * 4], 4);
   }
   
   // Apply target positions to motors with offset compensation and direction inversion
-  for (int i = 0; i < 18; i++) {
+  for (int i = 0; i < num_motors; i++) {
     int motorID = i + 1;
     
     float target_pos = target_positions[i];
@@ -290,7 +291,7 @@ void processTorqueEnablePacket(uint8_t* destuffed_data, size_t data_size) {
   uint8_t enable_flag = destuffed_data[1];
   
   // Apply torque enable/disable to all motors
-  for (int i = 1; i <= 18; i++) {
+  for (int i = 1; i <= num_motors; i++) {
     if (enable_flag == 1) {
       dxl.torqueOn(i);
     } else {
@@ -330,9 +331,9 @@ void processTeachingModePacket(uint8_t* destuffed_data, size_t data_size) {
     current_mode = TEACHING_MODE;
     
     // Initialize teaching mode parameters
-    for (int i = 0; i < 18; i++) {
+    for (int i = 0; i < num_motors; i++) {
       prev_positions[i] = getCurrentPosition(i+1);
-      prev_velocities[i] = getCurrentVelocity(i+1);
+      prev_velocities[i] = getCurrentVelocity(i+1); 
     }
     
     Serial.println("Switched to TEACHING MODE - motors are compliant");
@@ -417,11 +418,11 @@ void runTeachingMode(unsigned long currentTime) {
   
   struct __attribute__((packed)) {
     uint8_t id = 0x01;
-    float positions[18];
-    float velocities[18];
+    float positions[num_motors];
+    float velocities[num_motors];
   } encoderData;
   // Implement impedance control for compliant teaching
-  for (int i = 0; i < 18; i++) {
+  for (int i = 0; i < num_motors; i++) {
     float current_pos = getCurrentPosition(i+1);
     float current_vel = getCurrentVelocity(i+1);
     
@@ -461,15 +462,15 @@ float getCurrentVelocity(int motor_id) {
 
 void initBulkReadCommand(){
 
-  bulk_read_positions_param.id_count = 18;
-  for (int i=0; i<18; i++){
+  bulk_read_positions_param.id_count = num_motors;
+  for (int i=0; i<num_motors; i++){
     bulk_read_positions_param.xel[i].id = i+1;
     bulk_read_positions_param.xel[i].addr = ADDR_PRESENT_POSITION;
     bulk_read_positions_param.xel[i].length = LEN_PRESENT_POSITION;
   }
   
-  bulk_read_velocities_param.id_count = 18;
-  for (int i=0; i<18; i++){
+  bulk_read_velocities_param.id_count = num_motors;
+  for (int i=0; i<num_motors; i++){
     bulk_read_velocities_param.xel[i].id = i+1;
     bulk_read_velocities_param.xel[i].addr = ADDR_PRESENT_VELOCITY;
     bulk_read_velocities_param.xel[i].length = LEN_PRESENT_VELOCITY;
@@ -479,7 +480,7 @@ void initBulkReadCommand(){
 void initSyncWriteCommand(){
   sync_write_param.addr = ADDR_GOAL_POSITION;
   sync_write_param.length = LEN_GOAL_POSITION;
-  sync_write_param.id_count = 18;
+  sync_write_param.id_count = num_motors;
 }
 
 
@@ -499,7 +500,7 @@ void setup() {
 
   Serial.println("Connecting to dynamixels");
   // Wait until all dynamixels are connected
-  for (int i=1; i<=18; i++){
+  for (int i=1; i<=num_motors; i++){
     while (!dxl.getTorqueEnableStat(i)){
       dxl.torqueOn(i);
       delay(5);
@@ -508,27 +509,28 @@ void setup() {
   }
 
   // Turn off all leds for indicating dynamixel connections
-  for (int i=1; i<=18; i++){
+  for (int i=1; i<=num_motors; i++){
     dxl.ledOff(i);
   }
 
   // Initialize teaching mode parameters
-  for (int i = 0; i < 18; i++) {
+  for (int i = 0; i < num_motors; i++) {
     prev_positions[i] = getCurrentPosition(i+1);
     prev_velocities[i] = getCurrentVelocity(i+1);
   }
-
-  // I2C clock
-  Wire.setClock(400000);
   
-  // Start IMU in DMP mode
-  imu.begin();
-  // Initialize the digital motion processor
-  imu.dmpBegin(DMP_FEATURE_SEND_RAW_ACCEL | // Send accelerometer data
-                DMP_FEATURE_GYRO_CAL       | // Calibrate the gyro data
-                DMP_FEATURE_SEND_CAL_GYRO  | // Send calibrated gyro data
-                DMP_FEATURE_6X_LP_QUAT     , // Calculate quat's with accel/gyro
-                50);  //Sample rate
+  
+  // // I2C clock
+  // Wire.setClock(400000);
+  
+  // // Start IMU in DMP mode
+  // imu.begin();
+  // // Initialize the digital motion processor
+  // imu.dmpBegin(DMP_FEATURE_SEND_RAW_ACCEL | // Send accelerometer data
+  //               DMP_FEATURE_GYRO_CAL       | // Calibrate the gyro data
+  //               DMP_FEATURE_SEND_CAL_GYRO  | // Send calibrated gyro data
+  //               DMP_FEATURE_6X_LP_QUAT     , // Calculate quat's with accel/gyro
+  //               50);  //Sample rate
                 
   Serial.println("System Initialized - Default: NORMAL MODE");
   Serial.println("Send packet 0x06 with flag 1 to enable TEACHING MODE");
@@ -554,14 +556,14 @@ void loop() {
       //Get positions and velocities
       struct __attribute__((packed)) {
         uint8_t id = 0x01;
-        float positions[18];
-        float velocities[18];
+        float positions[num_motors];
+        float velocities[num_motors];
       } encoderData;
       
       dxl.bulkRead(bulk_read_positions_param, positions_read_result);
       dxl.bulkRead(bulk_read_velocities_param, velocities_read_result);
 
-      for (int i = 0; i < 18; i++) {
+      for (int i = 0; i < num_motors; i++) {
         int motorID = i + 1;
         
         int16_t raw_pos_val, raw_vel_val;
@@ -578,36 +580,36 @@ void loop() {
       lastEncoderTime = currentTime;
     }
     
-    // Send IMU data at 50Hz (every 20ms) with offset from encoder
-    if (currentTime - lastIMUTime >= IMU_INTERVAL) {
-      // Get IMU data
-      if (imu.fifoAvailable() >= 28) { // Check for new data in the FIFO
-        if (imu.dmpUpdateFifo() == INV_SUCCESS) {   
+    // // Send IMU data at 50Hz (every 20ms) with offset from encoder
+    // if (currentTime - lastIMUTime >= IMU_INTERVAL) {
+    //   // Get IMU data
+    //   if (imu.fifoAvailable() >= 28) { // Check for new data in the FIFO
+    //     if (imu.dmpUpdateFifo() == INV_SUCCESS) {   
           
-          struct __attribute__((packed)) {
-            uint8_t id = 0x02;
-            float ax, ay, az;
-            float gx, gy, gz;
-            float qx, qy, qz, qw;
-          } imuData;
+    //       struct __attribute__((packed)) {
+    //         uint8_t id = 0x02;
+    //         float ax, ay, az;
+    //         float gx, gy, gz;
+    //         float qx, qy, qz, qw;
+    //       } imuData;
           
-          // acceleration: g -> m/s² (using pre-calculated constant)
-          imuData.ax = imu.calcAccel(imu.ax) * ACCEL_TO_MS2;
-          imuData.ay = imu.calcAccel(imu.ay) * ACCEL_TO_MS2;
-          imuData.az = imu.calcAccel(imu.az) * ACCEL_TO_MS2;
-          // gyro: deg/s -> rad/s (using pre-calculated constant)
-          imuData.gx = imu.calcGyro(imu.gx) * GYRO_DEG_TO_RAD;
-          imuData.gy = imu.calcGyro(imu.gy) * GYRO_DEG_TO_RAD;
-          imuData.gz = imu.calcGyro(imu.gz) * GYRO_DEG_TO_RAD;
-          imuData.qx = imu.calcQuat(imu.qx);
-          imuData.qy = imu.calcQuat(imu.qy);
-          imuData.qz = imu.calcQuat(imu.qz);
-          imuData.qw = imu.calcQuat(imu.qw);
+    //       // acceleration: g -> m/s² (using pre-calculated constant)
+    //       imuData.ax = imu.calcAccel(imu.ax) * ACCEL_TO_MS2;
+    //       imuData.ay = imu.calcAccel(imu.ay) * ACCEL_TO_MS2;
+    //       imuData.az = imu.calcAccel(imu.az) * ACCEL_TO_MS2;
+    //       // gyro: deg/s -> rad/s (using pre-calculated constant)
+    //       imuData.gx = imu.calcGyro(imu.gx) * GYRO_DEG_TO_RAD;
+    //       imuData.gy = imu.calcGyro(imu.gy) * GYRO_DEG_TO_RAD;
+    //       imuData.gz = imu.calcGyro(imu.gz) * GYRO_DEG_TO_RAD;
+    //       imuData.qx = imu.calcQuat(imu.qx);
+    //       imuData.qy = imu.calcQuat(imu.qy);
+    //       imuData.qz = imu.calcQuat(imu.qz);
+    //       imuData.qw = imu.calcQuat(imu.qw);
 
-          sendWithByteStuffing((uint8_t*)&imuData, sizeof(imuData));
-          lastIMUTime = currentTime;
-        }
-      }
-    }
+    //       sendWithByteStuffing((uint8_t*)&imuData, sizeof(imuData));
+    //       lastIMUTime = currentTime;
+    //     }
+    //   }
+    // }
   }
 }
