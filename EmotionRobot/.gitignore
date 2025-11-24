@@ -1,0 +1,23 @@
+# ROS2 빌드 결과물
+     build/
+     install/
+     log/
+
+     # Python
+     __pycache__/
+     *.pyc
+     *.egg-info/
+
+     # 모델 파일
+     *.pt
+     *.pth
+     *.onnx
+
+     # IDE
+     .vscode/
+     .idea/
+
+     # OS
+     .DS_Store
+     EOF
+

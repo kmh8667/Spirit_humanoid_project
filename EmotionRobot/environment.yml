@@ -1,0 +1,11 @@
+     name: emotion_robot_vlm
+     channels:
+       - conda-forge
+       - defaults
+     dependencies:
+       - python=3.10
+       - numpy=1.26.4
+       - opencv=4.6.0
+       - pip
+       - pip:
+           - -r requirements.txt

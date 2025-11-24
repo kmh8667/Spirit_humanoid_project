@@ -1,0 +1,40 @@
+# Core ML/DL
+     torch==2.7.1
+     torchvision==0.17.2
+     torchaudio==2.7.1
+
+     # Computer Vision
+     opencv-python-headless==4.11.0.86
+     albumentations==1.3.1
+     pillow==10.2.0
+
+     # Face Recognition
+     insightface==0.7.3
+     facenet-pytorch==2.6.0
+     mxnet-cu113==1.9.1
+
+     # Object Detection
+     ultralytics==8.0.20
+     onnxruntime-gpu==1.22.0
+
+     # Google AI
+     google-generativeai==0.8.5
+     langchain-google-genai==2.1.5
+
+     # Speech
+     openai-whisper==20240930
+     gtts==2.5.4
+     coqui-tts==0.27.0
+
+     # Scientific
+     numpy==1.26.4
+     scipy==1.15.3
+     pandas==2.3.0
+     matplotlib==3.10.3
+
+     # ROS2 Tools
+     colcon-common-extensions==0.3.0
+
+     # Utilities
+     pyyaml==6.0.2
+     coloredlogs==15.0.1
